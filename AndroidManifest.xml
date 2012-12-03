@@ -28,6 +28,14 @@
             android:label="@string/title_activity_main" >
         </activity>
         
+        <activity
+            android:name=".ManageAppsActivity"
+            android:label="@string/manage_apps" >
+            <intent-filter>
+                <action android:name="com.example.proauth.ManageAppsActivity" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
     </application>
 
 </manifest>

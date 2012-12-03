@@ -9,7 +9,10 @@ import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.view.Window;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.ListView;
@@ -21,6 +24,9 @@ public class MainActivity extends Activity {
 	TextView prefManageApps;
 	ListView prefList;
 	String TAG = "MainActivity";
+	String[] values = new String[] {"Manage Your Apps", "History and Logs", "FAQ & Tutorial", 
+			"About ProAuth"
+	};
 	
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,12 +44,21 @@ public class MainActivity extends Activity {
     	
     	// For the ListView
     	prefList = (ListView) findViewById(R.id.prefList);
-    	String[] values = new String[] {"Manage Your Apps", "History and Logs", "FAQ & Tutorial", 
-    			"About ProAuth"
-    	};
+    	
     	ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
     			  android.R.layout.simple_list_item_1, android.R.id.text1, values);
     	prefList.setAdapter(adapter);
+    	OnItemClickListener listener = new OnItemClickListener(){
+    	      public void onItemClick(AdapterView<?> myAdapter, View myView, int myItemInt, long mylng) {
+    	          String selectedFromList =(String) (prefList.getItemAtPosition(myItemInt));
+    	          Log.d(TAG, selectedFromList);
+    	          if (selectedFromList.equals(values[0])){
+        	          Intent intent = new Intent("com.example.proauth.ManageAppsActivity"); 
+        	          startActivity(intent); 
+    	          };
+    	        }
+    	};
+    	prefList.setOnItemClickListener(listener);
     }
 
     @Override
@@ -69,6 +84,8 @@ public class MainActivity extends Activity {
 		
         return true;
 	}
+	
+	
 
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
