@@ -1,5 +1,9 @@
 package com.example.proauth;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,6 +18,7 @@ import android.content.SharedPreferences.Editor;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -23,6 +28,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -36,11 +42,15 @@ public class ManageAppsActivity extends Activity {
 	Context mContext;
 
 	String[] values;
+	Drawable[] app_icon_array;
 	SharedPreferences sp;
 	Editor e;
 
 	int selectedItem;
 	String app_to_edit;
+	
+	FileOutputStream log_file;
+	public static String LOG_FILE = "proauth_log.txt";
 
 	final String[] securityLevels = { SecurityLevel.PRIVATE.toString(),
 			SecurityLevel.HIGH.toString(), SecurityLevel.MEDIUM.toString(),
@@ -51,6 +61,13 @@ public class ManageAppsActivity extends Activity {
 		Log.d(TAG, "OnCreate");
 		super.onCreate(savedInstanceState);
 		mContext = this.getApplicationContext();
+		
+		File log_file_object = new File(mContext.getFilesDir(), LOG_FILE);
+		try {
+			log_file = new FileOutputStream(log_file_object);
+		} catch (FileNotFoundException e2) {
+			e2.printStackTrace();
+		}
 
 		// Disappear the icon/title
 		ActionBar ab = getActionBar();
@@ -62,6 +79,7 @@ public class ManageAppsActivity extends Activity {
 		final PackageManager pm = getPackageManager();
 
 		ArrayList<String> apps = new ArrayList<String>();
+		ArrayList<Drawable> app_icons = new ArrayList<Drawable>();
 		// get a list of installed apps.
 		Intent intent = new Intent(Intent.ACTION_MAIN, null);
 		intent.addCategory(Intent.CATEGORY_LAUNCHER);
@@ -71,11 +89,15 @@ public class ManageAppsActivity extends Activity {
 		for (ResolveInfo rInfo : list) {
 			apps.add(rInfo.activityInfo.applicationInfo.loadLabel(pm)
 					.toString());
+			Drawable app_icon = pm.getApplicationIcon(rInfo.activityInfo.applicationInfo);
+			Log.d(TAG,"Image being saved:" + app_icon.toString());
+			app_icons.add(app_icon);
 			Log.w(TAG, rInfo.activityInfo.applicationInfo.loadLabel(pm)
 					.toString());
 		}
 		appList = (ListView) findViewById(R.id.appList);
 		values = apps.toArray(new String[apps.size()]);
+		app_icon_array = app_icons.toArray(new Drawable[apps.size()]);
 
 		/*
 		 * ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
@@ -91,8 +113,7 @@ public class ManageAppsActivity extends Activity {
 			String security_level = sp.getString(values[i],
 					SecurityLevel.PRIVATE.toString());
 			e.putString(values[i], security_level);
-			Log.d(TAG, values[i]);
-			ass.add(new AppSecurity(values[i], security_level));
+			ass.add(new AppSecurity(values[i], security_level, app_icon_array[i]));
 		}
 		e.apply();
 
@@ -138,7 +159,7 @@ public class ManageAppsActivity extends Activity {
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
 				Toast.makeText(getApplicationContext(),
-						"Selected digit: " + securityLevels[selectedItem],
+						"Saving: " + securityLevels[selectedItem],
 						Toast.LENGTH_SHORT).show();
 				saveSecurityLevel();
 			}
@@ -196,8 +217,7 @@ public class ManageAppsActivity extends Activity {
 			String security_level = sp.getString(values[i],
 					SecurityLevel.PRIVATE.toString());
 			e.putString(values[i], security_level);
-			Log.d(TAG, values[i]);
-			ass.add(new AppSecurity(values[i], security_level));
+			ass.add(new AppSecurity(values[i], security_level, app_icon_array[i]));
 		}
 
 		AppSecurityArrayAdapter adapter = new AppSecurityArrayAdapter(this,
@@ -208,10 +228,12 @@ public class ManageAppsActivity extends Activity {
 	public class AppSecurity {
 		public String app_name;
 		public String app_security_level;
+		public Drawable app_icon;
 
-		public AppSecurity(String app_name, String sl) {
+		public AppSecurity(String app_name, String sl, Drawable app_icon) {
 			this.app_name = app_name;
 			this.app_security_level = sl;
+			this.app_icon = app_icon;
 		}
 
 		@Override
@@ -239,17 +261,23 @@ public class ManageAppsActivity extends Activity {
 
 			AppSecurity app_security = apps.get(position);
 			if (app_security != null) {
-				TextView username = (TextView) v.findViewById(R.id.app_name);
+				TextView app_name = (TextView) v.findViewById(R.id.app_name);
 				TextView security_level = (TextView) v
 						.findViewById(R.id.app_security_level);
+				ImageView app_icon = (ImageView) v.findViewById(R.id.app_icon);
 
-				if (username != null) {
-					username.setText(app_security.app_name);
+				if (app_name != null) {
+					app_name.setText(app_security.app_name);
 				}
 
 				if (security_level != null) {
 					security_level.setText("Security Level: "
 							+ app_security.app_security_level);
+				}
+				
+
+				if (app_icon != null) {
+					app_icon.setImageDrawable(app_security.app_icon);
 				}
 			}
 			return v;

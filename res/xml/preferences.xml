@@ -7,7 +7,8 @@
         <CheckBoxPreference
                 android:key="security_level_0"
                 android:title="Private"
-                android:summary="Security level that requires authentication every time." />
+                android:summary="Security level that requires authentication every time."
+                android:enabled="false"/>
         
         <CheckBoxPreference
                 android:key="security_level_1"
@@ -28,7 +29,8 @@
         <CheckBoxPreference
                 android:key="security_level_4"
                 android:title="Public"
-                android:summary="Will always be available." />
+                android:summary="Will always be available." 
+                android:enabled="false"/>
 
     </PreferenceCategory>
 
