@@ -42,6 +42,7 @@ public class ManageAppsActivity extends Activity {
 	Context mContext;
 
 	String[] values;
+	String[] id_array;
 	Drawable[] app_icon_array;
 	SharedPreferences sp;
 	Editor e;
@@ -79,6 +80,7 @@ public class ManageAppsActivity extends Activity {
 		final PackageManager pm = getPackageManager();
 
 		ArrayList<String> apps = new ArrayList<String>();
+		ArrayList<String> ids = new ArrayList<String>();
 		ArrayList<Drawable> app_icons = new ArrayList<Drawable>();
 		// get a list of installed apps.
 		Intent intent = new Intent(Intent.ACTION_MAIN, null);
@@ -89,14 +91,15 @@ public class ManageAppsActivity extends Activity {
 		for (ResolveInfo rInfo : list) {
 			apps.add(rInfo.activityInfo.applicationInfo.loadLabel(pm)
 					.toString());
+			ids.add(rInfo.activityInfo.applicationInfo.packageName);
 			Drawable app_icon = pm.getApplicationIcon(rInfo.activityInfo.applicationInfo);
 			Log.d(TAG,"Image being saved:" + app_icon.toString());
 			app_icons.add(app_icon);
-			Log.w(TAG, rInfo.activityInfo.applicationInfo.loadLabel(pm)
-					.toString());
+			Log.w(TAG, "Showing:" + rInfo.activityInfo.applicationInfo.packageName);
 		}
 		appList = (ListView) findViewById(R.id.appList);
 		values = apps.toArray(new String[apps.size()]);
+		id_array = ids.toArray(new String[apps.size()]);
 		app_icon_array = app_icons.toArray(new Drawable[apps.size()]);
 
 		/*
@@ -110,10 +113,10 @@ public class ManageAppsActivity extends Activity {
 		e = sp.edit();
 		
 		for (int i = 0; i < values.length; i++) {
-			String security_level = sp.getString(values[i],
+			String security_level = sp.getString(id_array[i],
 					SecurityLevel.PRIVATE.toString());
 			e.putString(values[i], security_level);
-			ass.add(new AppSecurity(values[i], security_level, app_icon_array[i]));
+			ass.add(new AppSecurity(values[i], id_array[i], security_level, app_icon_array[i]));
 		}
 		e.apply();
 
@@ -128,7 +131,7 @@ public class ManageAppsActivity extends Activity {
 				AppSecurity selectedFromList = (AppSecurity) (appList
 						.getItemAtPosition(myItemInt));
 				Log.d(TAG, "Selected the app: " + selectedFromList.toString());
-				app_to_edit = selectedFromList.app_name;
+				app_to_edit = selectedFromList.app_id;
 				popDialog();
 			}
 		};
@@ -214,10 +217,10 @@ public class ManageAppsActivity extends Activity {
 		Log.d(TAG, "Refresh");
 		ArrayList<AppSecurity> ass = new ArrayList<AppSecurity>();
 		for (int i = 0; i < values.length; i++) {
-			String security_level = sp.getString(values[i],
+			String security_level = sp.getString(id_array[i],
 					SecurityLevel.PRIVATE.toString());
 			e.putString(values[i], security_level);
-			ass.add(new AppSecurity(values[i], security_level, app_icon_array[i]));
+			ass.add(new AppSecurity(values[i], id_array[i], security_level, app_icon_array[i]));
 		}
 
 		AppSecurityArrayAdapter adapter = new AppSecurityArrayAdapter(this,
@@ -227,11 +230,13 @@ public class ManageAppsActivity extends Activity {
 
 	public class AppSecurity {
 		public String app_name;
+		public String app_id;
 		public String app_security_level;
 		public Drawable app_icon;
 
-		public AppSecurity(String app_name, String sl, Drawable app_icon) {
+		public AppSecurity(String app_name, String id, String sl, Drawable app_icon) {
 			this.app_name = app_name;
+			this.app_id = id;
 			this.app_security_level = sl;
 			this.app_icon = app_icon;
 		}
