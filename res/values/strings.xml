@@ -10,6 +10,9 @@
     <string name="manage_apps">Manage Your Apps (unimplemented)</string>
     
     
+    <string name="title_activity_faq">FAQActivity</string>
+    
+    
     <string name="dummy">UncreativeDummyString</string>
 
 </resources>
