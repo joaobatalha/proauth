@@ -7,7 +7,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
-
 import android.app.ActionBar;
 import android.app.Activity;
 import android.app.admin.DevicePolicyManager;
@@ -86,9 +85,16 @@ public class MainActivity extends Activity {
 							"com.example.proauth.FAQActivity");
 					startActivity(intent);
 				} else if (selectedFromList.equals(values[3])) {
+					/*
 					Intent intent = new Intent(
 							"com.example.proauth.ConvenienceActivity");
 					startActivity(intent);
+					*/
+					
+
+			    	Intent intent = new Intent();
+			    	intent.setClass(MainActivity.this, MonitorService.class);
+			    	startService(intent);
 					
 				} 
 

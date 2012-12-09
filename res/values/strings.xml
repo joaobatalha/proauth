@@ -28,4 +28,16 @@
     <string name="title_activity_conv">Convenience Activity</string>
     <string name="convenience_contents">Handy dandy place to do things.\n</string>
 
+    
+    <string name="password_screen"> Input the password</string>
+    <string name="button_send">Send</string>
+    <string name="edit_message">Enter a message</string>
+    <string name="title_activity_display_message">My message</string>
+    <string name="service_running">The service is running</string>
+    
+    <string name="activity_name_pattern">Start.*cmp=([\\w\\._]*)/([\\w\\._]*)</string>
+    <string name="get_log_command">logcat ActivityManager:I *:S</string>
+    <string name="clear_log_command">logcat -c</string>
+    
+    
 </resources>

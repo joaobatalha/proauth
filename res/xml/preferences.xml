@@ -15,13 +15,13 @@
                 android:key="security_level_1"
                 android:title="High"
                 android:summary="Stays available while in contact. (Requires Accelerometer)" 
-                android:defaultValue="true"/>
+                android:defaultValue="false"/>
         
         <CheckBoxPreference
                 android:key="security_level_2"
                 android:title="Medium"
                 android:summary="Stays available after losing contact. (Requires Timeout)" 
-                android:defaultValue="false"/>
+                android:defaultValue="true"/>
         
         <CheckBoxPreference
                 android:key="security_level_3"
@@ -65,7 +65,6 @@
                 android:title="Choose Your password"
                 android:summary="click here to edit your password"
                 android:dialogTitle="Enter New Password"  
-    			android:inputType="textPassword"
-                android:defaultValue="pass"/>
+    			android:inputType="textPassword"/>
     </PreferenceCategory>
 </PreferenceScreen>

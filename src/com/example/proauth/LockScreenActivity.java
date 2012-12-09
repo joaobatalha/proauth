@@ -45,6 +45,12 @@ public class LockScreenActivity extends Activity {
 	private String TAG = "LockScreenActivity";
 	private Context mContext;
 	private String app_name;
+	
+	public static final String BlockedActivityName = "BlockedActivity";
+	public static final String BlockedPackageName = "BlockedPackage";
+	public static final String PACKAGE_NAME = "com.example.myfirstapp.PackageName";
+	public static final String PASSED = "com.example.myfirstapp.PASSED";
+	
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -144,7 +150,7 @@ public class LockScreenActivity extends Activity {
     	SharedPreferences mySharedPreferences = PreferenceManager
 				.getDefaultSharedPreferences(this);
 
-		String real_password = mySharedPreferences.getString("proauth_password", "");
+		String real_password = mySharedPreferences.getString("proauth_password", "1234");
     	if (real_password.equals(password)){
     		return true;
     	} else {
@@ -157,6 +163,7 @@ public class LockScreenActivity extends Activity {
 
 	@Override
 	public void onBackPressed() {
+		// Make it dead.
 	}
 
 	private void toggleShowWarning() {
@@ -177,6 +184,12 @@ public class LockScreenActivity extends Activity {
 			startActivityForResult(intent, 0);
 		} else {									//normal app case
 			Log.d(TAG, "You can go to your app. yay! Except I don't know how, until we merge with Joao.");
+			this.sendBroadcast(
+					new Intent()
+						.setAction(PASSED)
+						.putExtra(PACKAGE_NAME, getIntent().getStringExtra(BlockedPackageName)));
+			
+			finish();
 			/*
 			Intent intent = new Intent(app_name);
 			startActivity(intent);
@@ -188,7 +201,32 @@ public class LockScreenActivity extends Activity {
 		String wrong_text = "That wasn't the right password. Use your proauth password.";
 		Toast wrongPassword = Toast.makeText(mContext, wrong_text, Toast.LENGTH_LONG);
 		wrongPassword.show();
+		
+
+    	Intent intent = new Intent();
+    	intent
+    		.setAction(Intent.ACTION_MAIN)
+    		.addCategory(Intent.CATEGORY_HOME)
+    		.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+    	startActivity(intent);
+    	finish();
+		
 	}
+	
+	@Override
+	public void onStop(){
+		//TODO Second chance?
+		super.onStop();
+		/*
+		Intent intent = new Intent();
+		intent
+			.setAction(Intent.ACTION_MAIN)
+			.addCategory(Intent.CATEGORY_HOME)
+			.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+		startActivity(intent);
+		*/
+	}
+	
 	
 	/*
 	@Override

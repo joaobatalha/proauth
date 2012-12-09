@@ -66,20 +66,28 @@ public final class R {
         public static final int activity_main=0x7f090001;
     }
     public static final class string {
+        public static final int activity_name_pattern=0x7f070018;
         public static final int app_is_locked=0x7f07000b;
         public static final int app_name=0x7f070001;
+        public static final int button_send=0x7f070014;
+        public static final int clear_log_command=0x7f07001a;
         public static final int convenience_contents=0x7f070012;
         public static final int dummy=0x7f070008;
+        public static final int edit_message=0x7f070015;
         public static final int enter=0x7f070010;
         public static final int enter_password=0x7f07000e;
         public static final int faq_contents=0x7f070007;
+        public static final int get_log_command=0x7f070019;
         public static final int hello_world=0x7f070002;
         public static final int hello_world_main=0x7f070003;
         public static final int menu_settings=0x7f070004;
         public static final int no_description=0x7f07000a;
+        public static final int password_screen=0x7f070013;
         public static final int preferences=0x7f07000c;
         public static final int security_settings=0x7f07000d;
+        public static final int service_running=0x7f070017;
         public static final int title_activity_conv=0x7f070011;
+        public static final int title_activity_display_message=0x7f070016;
         public static final int title_activity_faq=0x7f070006;
         public static final int title_activity_main=0x7f070000;
         public static final int title_lockscreen=0x7f070009;
