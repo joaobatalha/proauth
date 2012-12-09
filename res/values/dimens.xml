@@ -4,5 +4,9 @@
     <dimen name="padding_small">8dp</dimen>
     <dimen name="padding_medium">8dp</dimen>
     <dimen name="padding_large">16dp</dimen>
+    
+    
+	<dimen name="status_text_size">20sp</dimen>
+	<dimen name="warning_size">64dp</dimen>
 
 </resources>

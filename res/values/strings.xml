@@ -14,5 +14,18 @@
     
     
     <string name="dummy">UncreativeDummyString</string>
+    
+    <string name="lockscreen">Lock Screen</string>
+    <string name="no_description"></string>
+    <string name="app_is_locked"><b>This application is locked by ProAuth.</b>\n Enter your password.</string>
+	<string name="toggle_lockscreen">Toggle Lock Screen</string>
+    <string name="lockscreen_indicator">Lock Screen Indicator</string>
+    <string name="preferences">Preferences</string>
+    <string name="security_settings">Security Settings</string>
+    
+    
+    <string name="enter_password">Enter Password</string>
+    <string name="which_app_is_locked">to unlock it.</string>
+    <string name="enter">Go to ProAuth</string>
 
 </resources>

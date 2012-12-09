@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent" >
+
+    <ImageView
+        android:id="@+id/BackgroundGlowImageView"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:contentDescription="@string/no_description"
+        android:scaleType="fitXY"
+        android:src="@drawable/bg_glow_white"
+        android:visibility="invisible" />
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:background="@drawable/bg_darktile"
+        android:orientation="vertical" >
+
+        <TextView
+            android:id="@+id/WarningTextView"
+            style="@style/StatusText"
+            android:layout_width="fill_parent"
+            android:layout_height="@dimen/warning_size"
+            android:background="@color/warning"
+            android:lines="2"
+            android:text="@string/app_is_locked" />
+
+        <EditText
+            android:id="@+id/PasswordEnter"
+            style="@style/StatusText"
+            android:layout_width="fill_parent"
+            android:layout_height="0dp"
+            android:layout_weight="4"
+            android:ellipsize="start"
+            android:gravity="center"
+            android:hint="@string/enter_password"
+            android:inputType="textPassword" />
+
+        
+        <TextView
+            android:id="@+id/WhichAppTextView"
+            style="@style/StatusText"
+            android:layout_width="fill_parent"
+            android:layout_height="@dimen/warning_size"
+            android:lines="1"
+            android:text="@string/which_app_is_locked" />
+        
+        <ImageView
+            android:id="@+id/AppIcon"
+            android:layout_width="fill_parent"
+            android:layout_height="0dp"
+            android:layout_weight="4"
+            android:gravity="center" 
+            android:src="@drawable/active_lock"/>
+        
+        <Button
+            android:id="@+id/EnterButton"
+            android:layout_width="fill_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="@string/enter" />
+    </LinearLayout>
+
+</merge>

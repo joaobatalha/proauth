@@ -76,6 +76,15 @@ public class MainActivity extends Activity {
 					Intent intent = new Intent(
 							"com.example.proauth.ManageAppsActivity");
 					startActivity(intent);
+				} else if (selectedFromList.equals(values[1])) {
+					Intent intent = new Intent(
+							"com.example.proauth.LockScreenActivity");
+					intent.putExtra("app_name", "com.android.email");
+					startActivity(intent);
+				} else if (selectedFromList.equals(values[2])) {
+					Intent intent = new Intent(
+							"com.example.proauth.FAQActivity");
+					startActivity(intent);
 				} else if (selectedFromList.equals(values[3])) {
 					try {
 						Process process = Runtime.getRuntime()
@@ -103,11 +112,7 @@ public class MainActivity extends Activity {
 					// Intent(DevicePolicyManager.ACTION_ADD_DEVICE_ADMIN);
 					// intent.putExtra(DevicePolicyManager.EXTRA_DEVICE_ADMIN,
 					// securemeAdmin);
-				} else if (selectedFromList.equals(values[2])) {
-					Intent intent = new Intent(
-							"com.example.proauth.FAQActivity");
-					startActivity(intent);
-				}
+				} 
 
 			}
 		};
@@ -130,9 +135,15 @@ public class MainActivity extends Activity {
 		 */
 
 		Intent intent = new Intent();
+		/*
 		intent.setClass(MainActivity.this, SetPreferencesActivity.class);
 		startActivityForResult(intent, 0);
+		*/
 
+		intent.setClass(MainActivity.this, LockScreenActivity.class);
+		intent.putExtra("app_name", "proauth_settings");
+		startActivityForResult(intent, 0);
+		
 		return true;
 	}
 
@@ -157,9 +168,11 @@ public class MainActivity extends Activity {
 		Log.d(TAG, "Checkbox pref:" + my_checkbox_preference);
 		// prefCheckBox.setChecked(my_checkbox_preference);
 
+		/*
 		String my_edittext_preference = mySharedPreferences.getString(
 				"edittext_preference", "");
 		prefManageApps.setText(my_edittext_preference);
+		*/
 
 	}
 }

@@ -54,9 +54,10 @@
     <PreferenceCategory
         	android:title="Other">
         <EditTextPreference
-                android:key="edittext_preference"
-                android:title="Random Text Edit"
-                android:summary="click here to edit the text on main page"
-                android:dialogTitle="Enter New Text" />
+                android:key="proauth_password"
+                android:title="Choose Your password"
+                android:summary="click here to edit your password"
+                android:dialogTitle="Enter New Password"  
+    			android:inputType="textPassword" />
     </PreferenceCategory>
 </PreferenceScreen>
