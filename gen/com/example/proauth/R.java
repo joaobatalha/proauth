@@ -34,54 +34,57 @@ public final class R {
         public static final int selector_actionbar_button_transition=0x7f020008;
     }
     public static final class id {
-        public static final int AppIcon=0x7f0a0005;
-        public static final int BackgroundGlowImageView=0x7f0a0001;
-        public static final int EnterButton=0x7f0a0006;
-        public static final int MenuItemPreferences=0x7f0a000e;
-        public static final int MenuItemSecuritySettings=0x7f0a000f;
-        public static final int PasswordEnter=0x7f0a0003;
-        public static final int WarningTextView=0x7f0a0002;
-        public static final int WhichAppTextView=0x7f0a0004;
-        public static final int appList=0x7f0a000d;
-        public static final int app_icon=0x7f0a000a;
-        public static final int app_name=0x7f0a000b;
-        public static final int app_security_level=0x7f0a000c;
-        public static final int faq_content=0x7f0a0000;
-        public static final int main_page_welcome=0x7f0a0007;
-        public static final int menu_settings=0x7f0a0010;
-        public static final int prefEditText=0x7f0a0008;
-        public static final int prefList=0x7f0a0009;
+        public static final int AppIcon=0x7f0a0006;
+        public static final int BackgroundGlowImageView=0x7f0a0002;
+        public static final int EnterButton=0x7f0a0007;
+        public static final int MenuItemPreferences=0x7f0a000f;
+        public static final int MenuItemSecuritySettings=0x7f0a0010;
+        public static final int PasswordEnter=0x7f0a0004;
+        public static final int WarningTextView=0x7f0a0003;
+        public static final int WhichAppTextView=0x7f0a0005;
+        public static final int appList=0x7f0a000e;
+        public static final int app_icon=0x7f0a000b;
+        public static final int app_name=0x7f0a000c;
+        public static final int app_security_level=0x7f0a000d;
+        public static final int convenience_content=0x7f0a0000;
+        public static final int faq_content=0x7f0a0001;
+        public static final int main_page_welcome=0x7f0a0008;
+        public static final int menu_settings=0x7f0a0011;
+        public static final int prefEditText=0x7f0a0009;
+        public static final int prefList=0x7f0a000a;
     }
     public static final class layout {
-        public static final int activity_faq=0x7f030000;
-        public static final int activity_lock=0x7f030001;
-        public static final int activity_main=0x7f030002;
-        public static final int app_security_listitem=0x7f030003;
-        public static final int manage_apps=0x7f030004;
+        public static final int activity_convenience=0x7f030000;
+        public static final int activity_faq=0x7f030001;
+        public static final int activity_lock=0x7f030002;
+        public static final int activity_main=0x7f030003;
+        public static final int app_security_listitem=0x7f030004;
+        public static final int manage_apps=0x7f030005;
     }
     public static final class menu {
         public static final int actionbar_main=0x7f090000;
         public static final int activity_main=0x7f090001;
     }
     public static final class string {
-        public static final int app_is_locked=0x7f07000a;
-        public static final int app_name=0x7f070000;
-        public static final int dummy=0x7f070007;
-        public static final int enter=0x7f070011;
-        public static final int enter_password=0x7f07000f;
-        public static final int hello_world=0x7f070001;
-        public static final int hello_world_main=0x7f070002;
-        public static final int lockscreen=0x7f070008;
-        public static final int lockscreen_indicator=0x7f07000c;
-        public static final int manage_apps=0x7f070005;
-        public static final int menu_settings=0x7f070003;
-        public static final int no_description=0x7f070009;
-        public static final int preferences=0x7f07000d;
-        public static final int security_settings=0x7f07000e;
+        public static final int app_is_locked=0x7f07000b;
+        public static final int app_name=0x7f070001;
+        public static final int convenience_contents=0x7f070012;
+        public static final int dummy=0x7f070008;
+        public static final int enter=0x7f070010;
+        public static final int enter_password=0x7f07000e;
+        public static final int faq_contents=0x7f070007;
+        public static final int hello_world=0x7f070002;
+        public static final int hello_world_main=0x7f070003;
+        public static final int menu_settings=0x7f070004;
+        public static final int no_description=0x7f07000a;
+        public static final int preferences=0x7f07000c;
+        public static final int security_settings=0x7f07000d;
+        public static final int title_activity_conv=0x7f070011;
         public static final int title_activity_faq=0x7f070006;
-        public static final int title_activity_main=0x7f070004;
-        public static final int toggle_lockscreen=0x7f07000b;
-        public static final int which_app_is_locked=0x7f070010;
+        public static final int title_activity_main=0x7f070000;
+        public static final int title_lockscreen=0x7f070009;
+        public static final int title_manage_apps=0x7f070005;
+        public static final int which_app_is_locked=0x7f07000f;
     }
     public static final class style {
         /** 

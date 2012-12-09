@@ -34,7 +34,7 @@ public class MainActivity extends Activity {
 	ListView prefList;
 	String TAG = "MainActivity";
 	String[] values = new String[] { "Manage Your Apps", "History and Logs",
-			"FAQ & Tutorial", "About ProAuth" };
+			"FAQ & Tutorial", "Button for Convenience" };
 
 	FileOutputStream log_file;
 	public static String LOG_FILE = "proauth_log.txt";
@@ -86,32 +86,10 @@ public class MainActivity extends Activity {
 							"com.example.proauth.FAQActivity");
 					startActivity(intent);
 				} else if (selectedFromList.equals(values[3])) {
-					try {
-						Process process = Runtime.getRuntime()
-								.exec("logcat ActivityManager:I *:S");
-						InputStreamReader isr = new InputStreamReader(
-								process.getInputStream());
-						BufferedReader bufferedReader = new BufferedReader(isr);
-
-						StringBuilder log = new StringBuilder();
-						String line;
-						while ((line = bufferedReader.readLine()) != null) {
-							if (!line.contains("MainActivity")) {
-								log.append(line);
-							}
-						}
-						
-						//Log.e("LOGCAT CLONE", log.toString());
-						
-						TextView tv = (TextView) findViewById(R.id.main_page_welcome);
-						tv.setText(log.toString());
-					} catch (IOException e) {
-						Log.e(TAG, e.getMessage());
-					}
-					// Intent intent = new
-					// Intent(DevicePolicyManager.ACTION_ADD_DEVICE_ADMIN);
-					// intent.putExtra(DevicePolicyManager.EXTRA_DEVICE_ADMIN,
-					// securemeAdmin);
+					Intent intent = new Intent(
+							"com.example.proauth.ConvenienceActivity");
+					startActivity(intent);
+					
 				} 
 
 			}

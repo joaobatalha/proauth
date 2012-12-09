@@ -1,31 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
+    <string name="title_activity_main">MainActivity</string>
     <string name="app_name">ProAuth</string>
     <string name="hello_world">Hello world!</string>
     <string name="hello_world_main">Main ProAuth page will be directory to app management, history, etc. </string>
     <string name="menu_settings">Settings</string>
-    <string name="title_activity_main">MainActivity</string>
     
-    <string name="manage_apps">Manage Your Apps (unimplemented)</string>
+    <string name="title_manage_apps">Manage Your Apps (unimplemented)</string>
     
     
     <string name="title_activity_faq">FAQActivity</string>
-    
+    <string name="faq_contents">Welcome to our FAQ page!\n</string>
     
     <string name="dummy">UncreativeDummyString</string>
     
-    <string name="lockscreen">Lock Screen</string>
+    <string name="title_lockscreen">Lock Screen</string>
     <string name="no_description"></string>
     <string name="app_is_locked"><b>This application is locked by ProAuth.</b>\n Enter your password.</string>
-	<string name="toggle_lockscreen">Toggle Lock Screen</string>
-    <string name="lockscreen_indicator">Lock Screen Indicator</string>
     <string name="preferences">Preferences</string>
     <string name="security_settings">Security Settings</string>
-    
-    
     <string name="enter_password">Enter Password</string>
     <string name="which_app_is_locked">to unlock it.</string>
     <string name="enter">Go to ProAuth</string>
+    
+    
+    <string name="title_activity_conv">Convenience Activity</string>
+    <string name="convenience_contents">Handy dandy place to do things.\n</string>
 
 </resources>
