@@ -8,29 +8,33 @@
                 android:key="security_level_0"
                 android:title="Private"
                 android:summary="Security level that requires authentication every time."
-                android:enabled="false"/>
+                android:enabled="false"
+                android:defaultValue="true"/>
         
         <CheckBoxPreference
                 android:key="security_level_1"
                 android:title="High"
-                android:summary="Stays available while in contact. (Requires Accelerometer)" />
+                android:summary="Stays available while in contact. (Requires Accelerometer)" 
+                android:defaultValue="true"/>
         
         <CheckBoxPreference
                 android:key="security_level_2"
                 android:title="Medium"
-                android:summary="Stays available after losing contact. (Requires Timeout)" />
-        
+                android:summary="Stays available after losing contact. (Requires Timeout)" 
+                android:defaultValue="false"/>
         
         <CheckBoxPreference
                 android:key="security_level_3"
                 android:title="Low"
-                android:summary="Stays available in familiar locations. (Requires GPS)" />
+                android:summary="Stays available in familiar locations. (Requires GPS)" 
+                android:defaultValue="false"/>
         
         <CheckBoxPreference
                 android:key="security_level_4"
                 android:title="Public"
                 android:summary="Will always be available." 
-                android:enabled="false"/>
+                android:enabled="false"
+                android:defaultValue="true"/>
 
     </PreferenceCategory>
 
@@ -39,25 +43,29 @@
 
         <CheckBoxPreference
                 android:key="trigger_0"
-                android:title="Timeout"/>
+                android:title="Timeout"
+                android:defaultValue="true"/>
         
         <CheckBoxPreference
                 android:key="trigger_1"
-                android:title="Accelerometer"/>
+                android:title="Accelerometer"
+                android:defaultValue="false"/>
         
         <CheckBoxPreference
                 android:key="trigger_2"
-                android:title="GPS"/>
+                android:title="GPS"
+                android:defaultValue="false"/>
 
     </PreferenceCategory>
 
     <PreferenceCategory
-        	android:title="Other">
+        	android:title="Password">
         <EditTextPreference
                 android:key="proauth_password"
                 android:title="Choose Your password"
                 android:summary="click here to edit your password"
                 android:dialogTitle="Enter New Password"  
-    			android:inputType="textPassword" />
+    			android:inputType="textPassword"
+                android:defaultValue="pass"/>
     </PreferenceCategory>
 </PreferenceScreen>
