@@ -38,7 +38,7 @@ public class ManageAppsActivity extends Activity {
 
 	// CheckBox prefCheckBox;
 	ListView appList;
-	String TAG = "ManageAppsActivity";
+	public static String TAG = "ManageAppsActivity";
 	Context mContext;
 
 	String[] values;

@@ -125,7 +125,7 @@ public class MainActivity extends Activity {
 		*/
 
 		intent.setClass(MainActivity.this, LockScreenActivity.class);
-		intent.putExtra("app_name", "proauth_settings");
+		intent.putExtra(LockScreenActivity.BlockedPackageName, "proauth_settings");
 		startActivityForResult(intent, 0);
 		
 		return true;

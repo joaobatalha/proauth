@@ -15,12 +15,13 @@ public class BlockActivityHandler {
 	private Context current_context;
 	private String lockActivityName;
 	private String lastRunningPackage;
+	private String lockPackage = "com.example.proauth";
 	private ActivityManager activity_manager;
 	
 
 	public BlockActivityHandler(Context context) {
 		current_context = context;
-		lockActivityName = ".LockActivity";
+		lockActivityName = ".LockScreenActivity";
 		activity_manager = (ActivityManager)current_context.getSystemService(Context.ACTIVITY_SERVICE);
 		lastRunningPackage = getRunningPackage();
 		
@@ -29,8 +30,18 @@ public class BlockActivityHandler {
 			public void onReceive(Context context, Intent intent) {
 				String packagename = intent.getStringExtra(LockScreenActivity.PACKAGE_NAME);
 				lastRunningPackage = packagename;
+				lockPackage = packagename;
 			}
 		}, new IntentFilter(LockScreenActivity.PASSED));
+		
+
+		context.registerReceiver(new BroadcastReceiver(){
+			@Override
+			public void onReceive(Context context, Intent intent) {
+				String packagename = intent.getStringExtra(LockScreenActivity.PACKAGE_NAME);
+				lockPackage = "com.example.proauth";
+			}
+		}, new IntentFilter(LockScreenActivity.NOT_PASSED));
 	}
 	
 	private String getRunningPackage(){
@@ -53,9 +64,11 @@ public class BlockActivityHandler {
 			// Here we are going to want to go through the list of blocked apps
 			// And check if the packageName is in that list
 //			Log.d("JOAO", "packageNames variable" + packageName);
-			if (packageName.equals("com.example.myfirstapp")) {
+			if (packageName.equals("com.example.proauth")) {
 				lastRunningPackage = packageName;
 				return;
+			} else if (packageName.equals(lockPackage)){
+				// Do nothing.
 			} else {
 //				if(packageName.equals("com.android.browser")){
 //					Log.d("JOAO","B");
@@ -76,8 +89,8 @@ public class BlockActivityHandler {
 		Intent locking_intent = new Intent(current_context, LockScreenActivity.class);
 		locking_intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 
-		locking_intent.putExtra(LockScreenActivity.BlockedActivityName, activityName);
 		locking_intent.putExtra(LockScreenActivity.BlockedPackageName, packageName);
+		locking_intent.putExtra(LockScreenActivity.BlockedActivityName, activityName);
 
 		current_context.startActivity(locking_intent);
 	}

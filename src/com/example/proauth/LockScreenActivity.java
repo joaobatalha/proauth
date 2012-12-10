@@ -48,8 +48,9 @@ public class LockScreenActivity extends Activity {
 	
 	public static final String BlockedActivityName = "BlockedActivity";
 	public static final String BlockedPackageName = "BlockedPackage";
-	public static final String PACKAGE_NAME = "com.example.myfirstapp.PackageName";
-	public static final String PASSED = "com.example.myfirstapp.PASSED";
+	public static final String PACKAGE_NAME = "com.example.proauth.PackageName";
+	public static final String PASSED = "com.example.proauth.PASSED";
+	public static final String NOT_PASSED = "com.example.proauth.NOT_PASSED";
 	
 
 	@Override
@@ -109,7 +110,7 @@ public class LockScreenActivity extends Activity {
 	public void onResume() {
 		super.onResume();
 
-		app_name = this.getIntent().getStringExtra("app_name");
+		app_name = this.getIntent().getStringExtra(BlockedPackageName);
 		// toggleShowWarning();
 		
 		if(app_name.equals("proauth_settings")){	//special case the settings
@@ -151,6 +152,7 @@ public class LockScreenActivity extends Activity {
 				.getDefaultSharedPreferences(this);
 
 		String real_password = mySharedPreferences.getString("proauth_password", "1234");
+		Log.d(TAG, "real password: " + real_password);
     	if (real_password.equals(password)){
     		return true;
     	} else {
@@ -201,7 +203,11 @@ public class LockScreenActivity extends Activity {
 		String wrong_text = "That wasn't the right password. Use your proauth password.";
 		Toast wrongPassword = Toast.makeText(mContext, wrong_text, Toast.LENGTH_LONG);
 		wrongPassword.show();
-		
+
+		this.sendBroadcast(
+				new Intent()
+					.setAction(NOT_PASSED)
+					.putExtra(PACKAGE_NAME, getIntent().getStringExtra(BlockedPackageName)));
 
     	Intent intent = new Intent();
     	intent

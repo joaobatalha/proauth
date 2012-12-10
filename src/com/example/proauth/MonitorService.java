@@ -16,9 +16,12 @@ import android.app.ActivityManager.RecentTaskInfo;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.IBinder;
+import android.preference.PreferenceManager;
 import android.util.Log;
 
 public class MonitorService extends Service {
@@ -32,6 +35,7 @@ public class MonitorService extends Service {
     private Method mStopForeground;
     private Object[] mStartForegroundArgs = new Object[2];
     private Object[] mStopForegroundArgs = new Object[1];
+    private Context mContext;
     
     @Override
     public void onCreate() {
@@ -45,6 +49,8 @@ public class MonitorService extends Service {
             // Running on an older platform.
             mStartForeground = mStopForeground = null;
         }
+        
+        mContext = this;
         
         if(init == 0){
         	init = 1;
@@ -118,7 +124,6 @@ public class MonitorService extends Service {
 	private static String clear_log_command;
 	private static Pattern ActivityPattern;
 	private static int init;
-	private String current_app = "com.example.proauth";
 	
 	//Code to execute when service is started 
 	@Override
@@ -139,8 +144,23 @@ public class MonitorService extends Service {
 
     	BufferedReader br;
     	BlockActivityHandler blocking_handler;
+    	SharedPreferences mPrefs;
     	public LogMonitoringThread(BlockActivityHandler handler){
     		blocking_handler = handler;
+
+    		mPrefs = PreferenceManager
+    				.getDefaultSharedPreferences(mContext);
+
+    	}
+    	private boolean requiresBlocking(String packageName){
+
+    		mPrefs = getSharedPreferences(ManageAppsActivity.TAG, MODE_PRIVATE);
+    		String appSecurityLevel = mPrefs.getString(
+    				packageName, "");
+    		if (appSecurityLevel.equals(SecurityLevel.PUBLIC.toString())){
+    			return false;
+    		}
+    		return true;
     	}
     	
 		@Override
@@ -192,15 +212,15 @@ public class MonitorService extends Service {
 					}
 					//Log.d("JOAO", "Line matched in the log: " + line);	
 					
-					if (!current_app.equals(m.group(1))){
+					if (!m.group(1).equals("com.example.proauth")){
 						Log.i("JOAO", "Found activity launching: " + m.group(1) + "  /   " + m.group(2));
-						current_app = m.group(1);
+						if (!requiresBlocking(m.group(1))){
+							continue;
+						}
+						if(blocking_handler != null){
+							blocking_handler.onActivityStarting(m.group(1), m.group(2));
+						}
 					}
-					/*
-					if(blocking_handler != null){
-						blocking_handler.onActivityStarting(m.group(1), m.group(2));
-					}
-					*/
 				}
 			} catch (IOException e) {
 				e.printStackTrace();
