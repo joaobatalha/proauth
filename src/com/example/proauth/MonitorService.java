@@ -50,7 +50,8 @@ public class MonitorService extends Service {
         	init = 1;
         	get_log_command = getResources().getString(R.string.get_log_command);
     		clear_log_command = getResources().getString(R.string.clear_log_command);
-    		String regex_pattern = getResources().getString(R.string.activity_name_pattern);
+    		//String regex_pattern = getResources().getString(R.string.activity_name_pattern);
+    		String regex_pattern = getResources().getString(R.string.intent_name_pattern);
     		ActivityPattern = Pattern.compile(regex_pattern,Pattern.CASE_INSENSITIVE);
     		Log.d("Detector Service: ", "Initialized detector with pattern: " + regex_pattern);        
         }	
@@ -112,12 +113,12 @@ public class MonitorService extends Service {
 		return null;
 	}
 
-	
 	private static Thread log_monitor_thread;
 	private static String get_log_command;
 	private static String clear_log_command;
 	private static Pattern ActivityPattern;
 	private static int init;
+	private String current_app = "com.example.proauth";
 	
 	//Code to execute when service is started 
 	@Override
@@ -132,25 +133,6 @@ public class MonitorService extends Service {
 		log_monitor_thread = new LogMonitoringThread(new BlockActivityHandler(this));
 		log_monitor_thread.start();
 		return Service.START_STICKY;
-		
-	}
-	
-	private String getActiveAppName(){
-		ActivityManager am = (ActivityManager) this.getSystemService(ACTIVITY_SERVICE);
-		List<RecentTaskInfo> l = am.getRecentTasks(4, ActivityManager.RECENT_WITH_EXCLUDED);
-		Log.d("JOYC", l.get(0).baseIntent.toString());
-		Iterator i = l.iterator();
-		PackageManager pm = this.getPackageManager();
-		while (i.hasNext()) {
-		    ActivityManager.RecentTaskInfo info = (ActivityManager.RecentTaskInfo)(i.next());
-		    try {
-		    	Log.d("JOYC", info.origActivity.flattenToString());
-		        return info.baseIntent.toString();
-		    } catch (Exception e) {
-		        // Name Not FOund Exception
-		    }
-		}
-		return "<none>";
 	}
 	
 	private class LogMonitoringThread extends Thread{
@@ -172,15 +154,32 @@ public class MonitorService extends Service {
 				String line;
 
 				while(( (line=br.readLine()) != null) && !this.isInterrupted()){
-
-					Log.d("JOAO", "Line read from the log: " + line);	
-					Log.d("JOAO", "Currently active app: " + getActiveAppName());	
-					if (line.contains("cat=[" + Intent.CATEGORY_HOME + "]")){
+					if (!line.contains("START")){
+						continue;
+					}
+					
+					Log.d("JOYC******", "Line read from the log: " + line);	
+					
+					try {
+						Log.d("JOYC", "Sleeping for 500 ms....");	
+						this.sleep(500);
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+					
+					ActivityManager am = (ActivityManager) getSystemService(ACTIVITY_SERVICE);
+					List<RecentTaskInfo> l = am.getRecentTasks(2, ActivityManager.RECENT_WITH_EXCLUDED);
+					String intent_string = l.get(0).baseIntent.toString();
+					
+					Log.d("JOYC", intent_string);
+					//if (line.contains("cat=[" + Intent.CATEGORY_HOME + "]")){
+					if (intent_string.contains("cat=[" + Intent.CATEGORY_HOME + "]")){
 						Log.d("JOAO", "Cat match");	
 						continue;
 					} 
 					
-					Matcher m = ActivityPattern.matcher(line);
+					//Matcher m = ActivityPattern.matcher(line);
+					Matcher m = ActivityPattern.matcher(intent_string);
 					
 					if (!m.find()){
 						Log.d("JOAO", "No match");	
@@ -191,11 +190,17 @@ public class MonitorService extends Service {
 						Log.d("Detector Service: ", "Error while matching a line of the log.");
 						continue;
 					}
-					Log.d("JOAO", "Line matched in the log: " + line);	
-					Log.i("JOAO", "Found activity launching: " + m.group(1) + "  /   " + m.group(2));
+					//Log.d("JOAO", "Line matched in the log: " + line);	
+					
+					if (!current_app.equals(m.group(1))){
+						Log.i("JOAO", "Found activity launching: " + m.group(1) + "  /   " + m.group(2));
+						current_app = m.group(1);
+					}
+					/*
 					if(blocking_handler != null){
 						blocking_handler.onActivityStarting(m.group(1), m.group(2));
 					}
+					*/
 				}
 			} catch (IOException e) {
 				e.printStackTrace();

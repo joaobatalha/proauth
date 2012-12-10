@@ -36,6 +36,7 @@
     <string name="service_running">The service is running</string>
     
     <string name="activity_name_pattern">Start.*cmp=([\\w\\._]*)/([\\w\\._]*)</string>
+    <string name="intent_name_pattern">.*cmp=([\\w\\._]*)/([\\w\\._]*)</string>
     <string name="get_log_command">logcat ActivityManager:I *:S</string>
     <string name="clear_log_command">logcat -c</string>
     
