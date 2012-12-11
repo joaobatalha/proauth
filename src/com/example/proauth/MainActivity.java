@@ -11,6 +11,7 @@ import android.app.Activity;
 import android.app.admin.DevicePolicyManager;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Log;
@@ -28,9 +29,9 @@ import android.widget.TextView;
 public class MainActivity extends Activity {
 
 	// CheckBox prefCheckBox;
-	TextView prefManageApps;
 	ListView prefList;
 	String TAG = "MainActivity";
+	public static String PHONE_SECURITY_STATE = "com.example.proauth.phone_security_state";
 	String[] values = new String[] {"ProAuth Settings", "Manage Your Apps", 
 			"FAQ & Tutorial", "Button for Convenience" };
 
@@ -49,10 +50,7 @@ public class MainActivity extends Activity {
 		} catch (FileNotFoundException e2) {
 			e2.printStackTrace();
 		}
-
-		// For the TextView
-		// prefCheckBox = (CheckBox)findViewById(R.id.prefCheckBox);
-		prefManageApps = (TextView) findViewById(R.id.prefEditText);
+		
 		loadPref();
 
 		// For the ListView
@@ -68,12 +66,10 @@ public class MainActivity extends Activity {
 						.getItemAtPosition(myItemInt));
 				Log.d(TAG, selectedFromList);
 				if (selectedFromList.equals(values[0])) {
-
 					Intent intent = new Intent();
 					intent.setClass(MainActivity.this, LockScreenActivity.class);
 					intent.putExtra(LockScreenActivity.BlockedPackageName, "proauth_settings");
 					startActivityForResult(intent, 0);
-					
 				} else if (selectedFromList.equals(values[1])) {
 					Intent intent = new Intent("com.example.proauth.LockScreenActivity");
 					intent.putExtra(LockScreenActivity.BlockedPackageName, "proauth_app_settings");
@@ -132,10 +128,18 @@ public class MainActivity extends Activity {
 	}
 
 	private void loadPref() {
-		SharedPreferences mySharedPreferences = PreferenceManager
+		SharedPreferences sp = PreferenceManager
 				.getDefaultSharedPreferences(this);
 
-		boolean monitor_on = mySharedPreferences.getBoolean(
+		// Initiate 
+		Editor e = sp.edit();
+		String state = sp.getString(PHONE_SECURITY_STATE, SecurityLevel.PUBLIC.toString());
+		e.putString(PHONE_SECURITY_STATE, state);
+		e.commit();
+
+		Log.d(TAG, "Current phone state:" + state);
+
+		boolean monitor_on = sp.getBoolean(
 				"monitor_on", false);
 		Log.d(TAG, "Monitor should be on:" + monitor_on);
 	}

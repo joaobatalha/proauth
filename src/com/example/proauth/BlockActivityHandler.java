@@ -9,7 +9,10 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.os.Handler;
+import android.preference.PreferenceManager;
 import android.util.Log;
 
 
@@ -23,9 +26,9 @@ public class BlockActivityHandler {
 	private Hashtable<String, Runnable> timeoutTable= new Hashtable<String, Runnable>();
 	private BroadcastReceiver passed;
 	private BroadcastReceiver not_passed;
+	public static String TAG = "BlockActivityHandler";
+	public int INTERVAL = 1 * 1000 * 5;		// 5 seconds
 	
-	
-
 	public BlockActivityHandler(Context context) {
 		current_context = context;
 		lockActivityName = ".LockScreenActivity";
@@ -35,6 +38,8 @@ public class BlockActivityHandler {
 		
 		Log.d("JOAO", "About to register the receivers");
 		
+		SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(current_context);
+		INTERVAL = Integer.parseInt(sp.getString("timeout_duration", "5000"));
 			
 		context.registerReceiver(passed = new BroadcastReceiver(){
 			@Override
@@ -58,6 +63,12 @@ public class BlockActivityHandler {
 				//Timeout is set to 1 minute
 				handler.postDelayed(runnable, 1 * 1000 * 60);
 				
+				// set the state to private
+				SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(current_context);
+				Editor e = sp.edit();
+				e.putString(MainActivity.PHONE_SECURITY_STATE, SecurityLevel.PRIVATE.toString());
+				e.commit();
+				Log.d(TAG, "Current phone state:" + sp.getString(MainActivity.PHONE_SECURITY_STATE, SecurityLevel.PUBLIC.toString()));
 				
 			}
 		}, new IntentFilter(LockScreenActivity.PASSED));
@@ -70,6 +81,48 @@ public class BlockActivityHandler {
 				lockPackage = "com.example.proauth";
 			}
 		}, new IntentFilter(LockScreenActivity.NOT_PASSED));
+		
+
+		context.registerReceiver(not_passed = new BroadcastReceiver(){
+			@Override
+			public void onReceive(Context context, Intent intent) {
+				Log.d(TAG, "Screen Off");
+				//Log.d(TAG, "Timeout table size: " + timeoutTable.size());
+				
+				/*
+				SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(current_context);
+				Editor e = sp.edit();
+				e.putString(MainActivity.PHONE_SECURITY_STATE, SecurityLevel.PRIVATE.toString());
+				e.commit();
+				Log.d(TAG, "Current phone state:" + sp.getString(MainActivity.PHONE_SECURITY_STATE, SecurityLevel.PUBLIC.toString()));
+				*/
+				
+				if(timeoutTable.containsKey(MainActivity.PHONE_SECURITY_STATE)){
+					// this is wrong.
+					Log.wtf(TAG, "already counting down!!!");
+				} else {
+					Runnable runnable = new systemTimeoutCallback();
+					timeoutTable.put(MainActivity.PHONE_SECURITY_STATE, runnable);
+					handler.removeCallbacks(runnable);
+					handler.postDelayed(runnable, INTERVAL);
+				}
+			}
+		}, new IntentFilter(Intent.ACTION_SCREEN_OFF));
+		
+
+		context.registerReceiver(not_passed = new BroadcastReceiver(){
+			@Override
+			public void onReceive(Context context, Intent intent) {
+				Log.d(TAG, "Screen On");
+				
+				if(timeoutTable.containsKey(MainActivity.PHONE_SECURITY_STATE)){
+					Log.d(TAG, "Stop counting down");
+					handler.removeCallbacks(timeoutTable.get(MainActivity.PHONE_SECURITY_STATE));
+					timeoutTable.remove(MainActivity.PHONE_SECURITY_STATE);		
+				}
+			}
+		}, new IntentFilter(Intent.ACTION_SCREEN_ON));
+		
 	}
 	
 	private class timeoutCallback implements Runnable{
@@ -80,6 +133,56 @@ public class BlockActivityHandler {
 		@Override
 		public void run() {
 			timeoutTable.remove(packageName);			
+		}	
+	}
+	
+	private void dropPhoneSecurityLevel(){
+		SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(current_context);
+	    boolean high = sp.getBoolean("security_level_3", false);
+	    boolean medium = sp.getBoolean("security_level_2", false);
+	    boolean low = sp.getBoolean("security_level_1", false);
+	    
+		String prev_level = sp.getString(MainActivity.PHONE_SECURITY_STATE, SecurityLevel.PUBLIC.toString());
+		//Log.d(TAG, "Current level " + prev_level);
+		String lower_level = SecurityLevel.PUBLIC.toString();
+		if (prev_level.equals(SecurityLevel.PRIVATE.toString())){
+			if (high){
+				lower_level = SecurityLevel.HIGH.toString();
+			} else if (medium){
+				lower_level = SecurityLevel.MEDIUM.toString();
+			} else if (low) {
+				lower_level = SecurityLevel.LOW.toString();
+			}
+		} else if (prev_level.equals(SecurityLevel.HIGH.toString())){
+			if (medium){
+				lower_level = SecurityLevel.MEDIUM.toString();
+			} else if (low) {
+				lower_level = SecurityLevel.LOW.toString();
+			}
+		} else if (prev_level.equals(SecurityLevel.MEDIUM.toString())){
+			if (low) {
+				lower_level = SecurityLevel.LOW.toString();
+			}
+		}
+
+		//Log.d(TAG, "Next level " + lower_level);
+		Editor e = sp.edit();
+		e.putString(MainActivity.PHONE_SECURITY_STATE, lower_level);
+		e.commit();
+		
+		Log.d(TAG, "DROPPED! Current phone state:" + sp.getString(MainActivity.PHONE_SECURITY_STATE, SecurityLevel.PUBLIC.toString()));
+	}
+	
+	private class systemTimeoutCallback implements Runnable{
+		public systemTimeoutCallback(){
+		}
+		@Override
+		public void run() {
+			// drop down to the next level
+			dropPhoneSecurityLevel();
+			Log.d(TAG, "Dropping!");
+			timeoutTable.put(MainActivity.PHONE_SECURITY_STATE, this);
+			handler.postDelayed(this, INTERVAL);
 		}	
 	}
 	
