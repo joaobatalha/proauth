@@ -21,6 +21,9 @@ public class BlockActivityHandler {
 	private ActivityManager activity_manager;
 	private Handler handler;
 	private Hashtable<String, Runnable> timeoutTable= new Hashtable<String, Runnable>();
+	private BroadcastReceiver passed;
+	private BroadcastReceiver not_passed;
+	
 	
 
 	public BlockActivityHandler(Context context) {
@@ -30,7 +33,10 @@ public class BlockActivityHandler {
 		activity_manager = (ActivityManager)current_context.getSystemService(Context.ACTIVITY_SERVICE);
 		lastRunningPackage = getRunningPackage();
 		
-		context.registerReceiver(new BroadcastReceiver(){
+		Log.d("JOAO", "About to register the receivers");
+		
+			
+		context.registerReceiver(passed = new BroadcastReceiver(){
 			@Override
 			public void onReceive(Context context, Intent intent) {
 				String packagename = intent.getStringExtra(LockScreenActivity.PACKAGE_NAME);
@@ -57,7 +63,7 @@ public class BlockActivityHandler {
 		}, new IntentFilter(LockScreenActivity.PASSED));
 		
 
-		context.registerReceiver(new BroadcastReceiver(){
+		context.registerReceiver(not_passed = new BroadcastReceiver(){
 			@Override
 			public void onReceive(Context context, Intent intent) {
 				String packagename = intent.getStringExtra(LockScreenActivity.PACKAGE_NAME);
@@ -130,5 +136,11 @@ public class BlockActivityHandler {
 		locking_intent.putExtra(LockScreenActivity.BlockedActivityName, activityName);
 
 		current_context.startActivity(locking_intent);
+	}
+	
+
+	public void onDestroy(){
+		current_context.unregisterReceiver(passed);
+		current_context.unregisterReceiver(not_passed);
 	}
 }

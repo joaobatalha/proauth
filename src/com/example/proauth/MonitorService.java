@@ -162,6 +162,15 @@ public class MonitorService extends Service {
     		return true;
     	}
     	
+    	@Override
+    	public void interrupt(){
+    		if(blocking_handler != null){
+    			blocking_handler.onDestroy();
+    		}
+    		super.interrupt();
+    		
+    	}
+    	
 		@Override
 		public void run() {
 			Log.d("JOAO", "Starting Monitoring Thread");	
@@ -211,6 +220,7 @@ public class MonitorService extends Service {
 	@Override
 	public void onDestroy(){
 		log_monitor_thread.interrupt();
+		log_monitor_thread = null;
 		stopForegroundCompat(R.string.service_running);
 	}
 	

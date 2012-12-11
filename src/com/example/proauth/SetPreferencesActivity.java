@@ -1,7 +1,6 @@
 package com.example.proauth;
 
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.preference.CheckBoxPreference;
@@ -9,7 +8,6 @@ import android.preference.Preference;
 import android.preference.Preference.OnPreferenceClickListener;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceManager;
-import android.preference.PreferenceScreen;
 import android.util.Log;
 
 
@@ -32,11 +30,25 @@ public class SetPreferencesActivity extends PreferenceActivity {
 
         Log.d(TAG, "The monitor button: " + monitor.toString());
         monitor.setOnPreferenceClickListener(new OnPreferenceClickListener(){
-
+        	
 			@Override
 			public boolean onPreferenceClick(Preference arg0) {
 				// TODO Auto-generated method stub
-				return false;
+				monitor.isChecked();
+				if(monitor.isChecked()){
+					Log.i("PREFERENCES", "Starting monitoring service");
+					Intent intent = new Intent();
+			    	intent.setClass(SetPreferencesActivity.this, MonitorService.class);
+			    	startService(intent);
+				}
+				else{
+					Log.i("PREFERENCES", "Stopping monitoring service");
+					Intent intent = new Intent();
+			    	intent.setClass(SetPreferencesActivity.this, MonitorService.class);
+			    	stopService(intent);
+					
+				}
+				return true;
 			}
         	
         });
