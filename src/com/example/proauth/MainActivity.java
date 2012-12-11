@@ -7,7 +7,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
-import android.app.ActionBar;
 import android.app.Activity;
 import android.app.admin.DevicePolicyManager;
 import android.content.Intent;
@@ -41,9 +40,6 @@ public class MainActivity extends Activity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		ActionBar ab = getActionBar();
-		ab.setDisplayShowTitleEnabled(false);
-		ab.setDisplayShowHomeEnabled(false);
 		setContentView(R.layout.activity_main);
 
 		Log.e(TAG, this.getApplicationContext().getFilesDir().toString());

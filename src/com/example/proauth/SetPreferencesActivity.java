@@ -4,17 +4,18 @@ package com.example.proauth;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.preference.PreferenceActivity;
 
 
-public class SetPreferencesActivity extends Activity {
+public class SetPreferencesActivity extends PreferenceActivity {
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
-		
-		getFragmentManager().beginTransaction().replace(android.R.id.content,
-                new PrefsFragment()).commit();
+
+        super.onCreate(savedInstanceState);
+        addPreferencesFromResource(R.xml.preferences);
 	}
 	
 

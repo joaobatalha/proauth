@@ -9,8 +9,8 @@
     <uses-permission android:name="android.permission.GET_TASKS"/>
 
     <uses-sdk
-        android:minSdkVersion="11"
-        android:targetSdkVersion="16" />
+        android:minSdkVersion="8"
+        android:targetSdkVersion="10" />
 
     <application
         android:allowBackup="true"

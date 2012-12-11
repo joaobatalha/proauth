@@ -7,7 +7,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import android.app.ActionBar;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
@@ -59,7 +58,7 @@ public class ManageAppsActivity extends Activity {
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-		Log.d(TAG, "OnCreate");
+		//Log.d(TAG, "OnCreate");
 		super.onCreate(savedInstanceState);
 		mContext = this.getApplicationContext();
 		
@@ -71,9 +70,6 @@ public class ManageAppsActivity extends Activity {
 		}
 
 		// Disappear the icon/title
-		ActionBar ab = getActionBar();
-		ab.setDisplayShowTitleEnabled(false);
-		ab.setDisplayShowHomeEnabled(false);
 		setContentView(R.layout.manage_apps);
 
 		// For the ListView
@@ -93,9 +89,9 @@ public class ManageAppsActivity extends Activity {
 					.toString());
 			ids.add(rInfo.activityInfo.applicationInfo.packageName);
 			Drawable app_icon = pm.getApplicationIcon(rInfo.activityInfo.applicationInfo);
-			Log.d(TAG,"Image being saved:" + app_icon.toString());
+			//Log.d(TAG,"Image being saved:" + app_icon.toString());
 			app_icons.add(app_icon);
-			Log.w(TAG, "Showing:" + rInfo.activityInfo.applicationInfo.packageName);
+			//Log.w(TAG, "Showing:" + rInfo.activityInfo.applicationInfo.packageName);
 		}
 		appList = (ListView) findViewById(R.id.appList);
 		values = apps.toArray(new String[apps.size()]);
@@ -118,7 +114,7 @@ public class ManageAppsActivity extends Activity {
 			e.putString(values[i], security_level);
 			ass.add(new AppSecurity(values[i], id_array[i], security_level, app_icon_array[i]));
 		}
-		e.apply();
+		e.commit();
 
 		AppSecurityArrayAdapter adapter = new AppSecurityArrayAdapter(this,
 				R.layout.app_security_listitem, ass);

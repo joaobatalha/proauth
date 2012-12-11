@@ -56,8 +56,8 @@ public class MonitorService extends Service {
         	init = 1;
         	get_log_command = getResources().getString(R.string.get_log_command);
     		clear_log_command = getResources().getString(R.string.clear_log_command);
-    		//String regex_pattern = getResources().getString(R.string.activity_name_pattern);
-    		String regex_pattern = getResources().getString(R.string.intent_name_pattern);
+    		String regex_pattern = getResources().getString(R.string.activity_name_pattern);
+    		//String regex_pattern = getResources().getString(R.string.intent_name_pattern);
     		ActivityPattern = Pattern.compile(regex_pattern,Pattern.CASE_INSENSITIVE);
     		Log.d("Detector Service: ", "Initialized detector with pattern: " + regex_pattern);        
         }	
@@ -85,7 +85,7 @@ public class MonitorService extends Service {
         }
         
         // Fall back on the old API.
-        //setForeground(true);
+        setForeground(true);
         mNM.notify(id, notification);
     }
     
@@ -147,13 +147,12 @@ public class MonitorService extends Service {
     	SharedPreferences mPrefs;
     	public LogMonitoringThread(BlockActivityHandler handler){
     		blocking_handler = handler;
-
     		mPrefs = PreferenceManager
     				.getDefaultSharedPreferences(mContext);
 
     	}
+    	
     	private boolean requiresBlocking(String packageName){
-
     		mPrefs = getSharedPreferences(ManageAppsActivity.TAG, MODE_PRIVATE);
     		String appSecurityLevel = mPrefs.getString(
     				packageName, "");
@@ -173,33 +172,14 @@ public class MonitorService extends Service {
 				br = new BufferedReader(new InputStreamReader(process.getInputStream()));
 				String line;
 
-				while(( (line=br.readLine()) != null) && !this.isInterrupted()){
-					if (!line.contains("START")){
-						continue;
-					}
-					
-					Log.d("JOYC******", "Line read from the log: " + line);	
-					
-					try {
-						Log.d("JOYC", "Sleeping for 500 ms....");	
-						this.sleep(500);
-					} catch (InterruptedException e) {
-						e.printStackTrace();
-					}
-					
-					ActivityManager am = (ActivityManager) getSystemService(ACTIVITY_SERVICE);
-					List<RecentTaskInfo> l = am.getRecentTasks(2, ActivityManager.RECENT_WITH_EXCLUDED);
-					String intent_string = l.get(0).baseIntent.toString();
-					
-					Log.d("JOYC", intent_string);
+				while(( (line=br.readLine()) != null) && !this.isInterrupted()){					
 					//if (line.contains("cat=[" + Intent.CATEGORY_HOME + "]")){
-					if (intent_string.contains("cat=[" + Intent.CATEGORY_HOME + "]")){
+					if (line.contains("cat=[" + Intent.CATEGORY_HOME + "]")){
 						Log.d("JOAO", "Cat match");	
 						continue;
 					} 
 					
-					//Matcher m = ActivityPattern.matcher(line);
-					Matcher m = ActivityPattern.matcher(intent_string);
+					Matcher m = ActivityPattern.matcher(line);
 					
 					if (!m.find()){
 						Log.d("JOAO", "No match");	
@@ -210,8 +190,8 @@ public class MonitorService extends Service {
 						Log.d("Detector Service: ", "Error while matching a line of the log.");
 						continue;
 					}
-					//Log.d("JOAO", "Line matched in the log: " + line);	
 					
+					Log.d("JOAO", "Line matched in the log: " + line);	
 					if (!m.group(1).equals("com.example.proauth")){
 						Log.i("JOAO", "Found activity launching: " + m.group(1) + "  /   " + m.group(2));
 						if (!requiresBlocking(m.group(1))){
