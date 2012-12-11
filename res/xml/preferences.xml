@@ -26,19 +26,25 @@
                 android:key="security_level_1"
                 android:title="High"
                 android:summary="Stays available while in contact. (Requires Accelerometer)" 
-                android:defaultValue="false"/>
+                android:defaultValue="false"
+            	android:dependency="trigger_2"
+            	/>
         
         <CheckBoxPreference
                 android:key="security_level_2"
                 android:title="Medium"
                 android:summary="Stays available after losing contact. (Requires Timeout)" 
-                android:defaultValue="true"/>
+                android:defaultValue="true"
+            	android:dependency="trigger_1"
+            	/>
         
         <CheckBoxPreference
                 android:key="security_level_3"
                 android:title="Low"
                 android:summary="Stays available in familiar locations. (Requires GPS)" 
-                android:defaultValue="false"/>
+                android:defaultValue="false"
+            	android:dependency="trigger_3"
+                />
         
         <CheckBoxPreference
                 android:key="security_level_4"
@@ -54,17 +60,34 @@
 
         <CheckBoxPreference
                 android:key="trigger_0"
-                android:title="Timeout"
-                android:defaultValue="true"/>
+                android:title="Individual App Timeout"
+                android:summary="Apps remain unlocked for 5 minutes after unlocking it"
+                android:defaultValue="false"/>
         
         <CheckBoxPreference
                 android:key="trigger_1"
+                android:title="Full System Timeout"
+                android:summary="Maintain security state with timeouts"
+                android:defaultValue="true"
+                />
+        
+        <ListPreference android:entries="@array/pref_timeout_entries"
+            android:title="Timeout Interval" 
+            android:key="timeout_duration" 
+            android:entryValues="@array/pref_timeout_values" 
+            android:summary="Time between security state transitions." 
+            android:defaultValue="5000"
+            android:dependency="trigger_1"
+             />
+        
+        <CheckBoxPreference
+                android:key="trigger_2"
                 android:title="Accelerometer"
                 android:defaultValue="false"/>
         
         <CheckBoxPreference
-                android:key="trigger_2"
-                android:title="GPS"
+                android:key="trigger_3"
+                android:title="GPD"
                 android:defaultValue="false"/>
 
     </PreferenceCategory>
