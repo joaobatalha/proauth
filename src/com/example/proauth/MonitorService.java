@@ -192,7 +192,7 @@ public class MonitorService extends Service {
 					}
 					
 					Log.d("JOAO", "Line matched in the log: " + line);	
-					if (!m.group(1).equals("com.example.proauth")){
+//					if (!m.group(1).equals("com.example.proauth")){
 						Log.i("JOAO", "Found activity launching: " + m.group(1) + "  /   " + m.group(2));
 						if (!requiresBlocking(m.group(1))){
 							continue;
@@ -200,7 +200,7 @@ public class MonitorService extends Service {
 						if(blocking_handler != null){
 							blocking_handler.onActivityStarting(m.group(1), m.group(2));
 						}
-					}
+//					}
 				}
 			} catch (IOException e) {
 				e.printStackTrace();
