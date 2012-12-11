@@ -68,8 +68,13 @@ public class MainActivity extends Activity {
 						.getItemAtPosition(myItemInt));
 				Log.d(TAG, selectedFromList);
 				if (selectedFromList.equals(values[0])) {
+					/*
 					Intent intent = new Intent(
 							"com.example.proauth.ManageAppsActivity");
+					*/
+					Intent intent = new Intent(
+							"com.example.proauth.LockScreenActivity");
+					intent.putExtra(LockScreenActivity.BlockedPackageName, "proauth_app_settings");
 					startActivity(intent);
 				} else if (selectedFromList.equals(values[1])) {
 					Intent intent = new Intent(

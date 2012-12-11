@@ -112,7 +112,7 @@ public class LockScreenActivity extends Activity {
 		app_name = this.getIntent().getStringExtra(BlockedPackageName);
 		// toggleShowWarning();
 		
-		if(app_name.equals("proauth_settings")){	//special case the settings
+		if(app_name.equals("proauth_settings") || app_name.equals("proauth_app_settings")){	//special case the settings
 			WhichAppTextView.setText("to change proAuth settings.");
 		} else {									//normal app case
 			final PackageManager pm = getApplicationContext().getPackageManager();
@@ -182,6 +182,10 @@ public class LockScreenActivity extends Activity {
 		if(app_name.equals("proauth_settings")){	//special case the settings
 			Intent intent = new Intent();
 			intent.setClass(this, SetPreferencesActivity.class);
+			startActivityForResult(intent, 0);
+		} else if(app_name.equals("proauth_app_settings")){	//special case the settings
+			Intent intent = new Intent();
+			intent.setClass(this, ManageAppsActivity.class);
 			startActivityForResult(intent, 0);
 		} else {									//normal app case
 			Log.d(TAG, "You can go to your app. yay! Except I don't know how, until we merge with Joao.");
