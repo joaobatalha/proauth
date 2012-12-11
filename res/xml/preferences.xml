@@ -1,6 +1,17 @@
 <PreferenceScreen
         xmlns:android="http://schemas.android.com/apk/res/android">
 
+    
+    <PreferenceCategory android:title="Activate Monitoring" >
+	    <CheckBoxPreference
+	        	android:id="@+id/monitor_togglebutton"
+                android:key="monitor_on"
+                android:title="Turn on app monitoring."
+                android:summary="Must be on for ProAuth to work."
+                android:defaultValue="false"/>
+    </PreferenceCategory>
+    
+    
     <PreferenceCategory
             android:title="Enable Security Levels">
 

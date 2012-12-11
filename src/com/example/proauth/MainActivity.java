@@ -140,7 +140,6 @@ public class MainActivity extends Activity {
 		/*
 		 * To make it simple, always re-load Preference setting.
 		 */
-
 		loadPref();
 	}
 
@@ -148,16 +147,8 @@ public class MainActivity extends Activity {
 		SharedPreferences mySharedPreferences = PreferenceManager
 				.getDefaultSharedPreferences(this);
 
-		boolean my_checkbox_preference = mySharedPreferences.getBoolean(
-				"security_level_0", false);
-		Log.d(TAG, "Checkbox pref:" + my_checkbox_preference);
-		// prefCheckBox.setChecked(my_checkbox_preference);
-
-		/*
-		String my_edittext_preference = mySharedPreferences.getString(
-				"edittext_preference", "");
-		prefManageApps.setText(my_edittext_preference);
-		*/
-
+		boolean monitor_on = mySharedPreferences.getBoolean(
+				"monitor_on", false);
+		Log.d(TAG, "Monitor should be on:" + monitor_on);
 	}
 }

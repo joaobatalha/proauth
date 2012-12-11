@@ -4,11 +4,20 @@ package com.example.proauth;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.preference.CheckBoxPreference;
+import android.preference.Preference;
+import android.preference.Preference.OnPreferenceClickListener;
 import android.preference.PreferenceActivity;
+import android.preference.PreferenceManager;
+import android.preference.PreferenceScreen;
+import android.util.Log;
 
 
 public class SetPreferencesActivity extends PreferenceActivity {
 
+	CheckBoxPreference monitor;
+	public static String TAG = "SetPreferencesActivity";
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
@@ -16,9 +25,23 @@ public class SetPreferencesActivity extends PreferenceActivity {
 
         super.onCreate(savedInstanceState);
         addPreferencesFromResource(R.xml.preferences);
+        
+        PreferenceManager preferenceManager = getPreferenceManager();  
+        monitor = 
+                 (CheckBoxPreference) preferenceManager.findPreference("monitor_on"); 
+
+        Log.d(TAG, "The monitor button: " + monitor.toString());
+        monitor.setOnPreferenceClickListener(new OnPreferenceClickListener(){
+
+			@Override
+			public boolean onPreferenceClick(Preference arg0) {
+				// TODO Auto-generated method stub
+				return false;
+			}
+        	
+        });
 	}
 	
-
 	@Override
 	public void onBackPressed() {
 		Intent intent = new Intent(this, MainActivity.class);

@@ -151,7 +151,7 @@ public class LockScreenActivity extends Activity {
 				.getDefaultSharedPreferences(this);
 
 		String real_password = mySharedPreferences.getString("proauth_password", "1234");
-		Log.d(TAG, "real password: " + real_password);
+		//Log.d(TAG, "real password: " + real_password);
     	if (real_password.equals(password)){
     		return true;
     	} else {
