@@ -5,6 +5,8 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 
 import android.app.Activity;
@@ -15,7 +17,9 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.content.pm.PermissionInfo;
 import android.content.pm.ResolveInfo;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -56,6 +60,21 @@ public class ManageAppsActivity extends Activity {
 			SecurityLevel.HIGH.toString(), SecurityLevel.MEDIUM.toString(),
 			SecurityLevel.LOW.toString(), SecurityLevel.PUBLIC.toString(), };
 
+	static final HashSet<String> privatePerms = new HashSet<String>(Arrays.asList("android.permission.BROADCAST_SMS",
+			"android.permission.CALL_PHONE",
+			"android.permission.DELETE_PACKAGES",
+			"android.permission.READ_LOGS",
+			"android.permission.SEND_SMS"));
+	
+	static final HashSet<String> mediumPerms = new HashSet<String>(Arrays.asList("android.permission.ACCESS_FINE_LOCATION",
+			 "android.permission.BLUETOOTH",
+			"android.permission.CAMERA",
+			 "android.permission.GET_TASKS",
+			"android.permission.MODIFY_PHONE_STATE",
+			 "android.permission.READ_CALENDAR",
+			"android.permission.READ_CONTACTS"));
+
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		//Log.d(TAG, "OnCreate");
@@ -82,38 +101,77 @@ public class ManageAppsActivity extends Activity {
 		Intent intent = new Intent(Intent.ACTION_MAIN, null);
 		intent.addCategory(Intent.CATEGORY_LAUNCHER);
 
+
+		ArrayList<AppSecurity> ass = new ArrayList<AppSecurity>();
+		
+
+		// Grab and Set Preferences
+		sp = this.getSharedPreferences(TAG, MODE_PRIVATE);
+		e = sp.edit();
+
 		List<ResolveInfo> list = pm.queryIntentActivities(intent,
 				PackageManager.PERMISSION_GRANTED);
 		for (ResolveInfo rInfo : list) {
-			apps.add(rInfo.activityInfo.applicationInfo.loadLabel(pm)
-					.toString());
-			ids.add(rInfo.activityInfo.applicationInfo.packageName);
+			String pkg_name = rInfo.activityInfo.applicationInfo.packageName;
+			String app_name = rInfo.activityInfo.applicationInfo.loadLabel(pm).toString();
 			Drawable app_icon = pm.getApplicationIcon(rInfo.activityInfo.applicationInfo);
-			//Log.d(TAG,"Image being saved:" + app_icon.toString());
-			app_icons.add(app_icon);
-			//Log.w(TAG, "Showing:" + rInfo.activityInfo.applicationInfo.packageName);
+			
+			if (ids.contains(pkg_name)){
+				continue;
+			}
+
+			// Get and Set Security
+			String security_level = sp.getString(pkg_name,
+					SecurityLevel.PUBLIC.toString());
+			
+			Log.d(TAG, "Getting permissions for " + pkg_name);
+			try {
+			    PackageInfo pkgInfo = getPackageManager().getPackageInfo(
+						    pkg_name, 
+						    PackageManager.GET_PERMISSIONS
+						  );
+			    String[] requestedPermissions = pkgInfo.requestedPermissions;
+			    if (requestedPermissions == null) {
+			    	Log.d(TAG, pkg_name + "... No requested permissions");
+			    } else {
+					for (int i = 0; i < requestedPermissions.length; i++) {
+					    if (mediumPerms.contains(requestedPermissions[i])){
+					    	Log.d(TAG, "Default to Medium because " + requestedPermissions[i]);
+					    	security_level = sp.getString(pkg_name, SecurityLevel.MEDIUM.toString());
+					    } else if (privatePerms.contains(requestedPermissions[i])){
+					    	Log.d(TAG, "Default to Private because " + requestedPermissions[i]);
+					    	security_level = sp.getString(pkg_name, SecurityLevel.PRIVATE.toString());
+					    	break;
+					    }
+						//Log.d(TAG, requestedPermissions[i]);
+					}
+			    }
+			}
+			catch (PackageManager.NameNotFoundException e) {
+				Log.d(TAG, "Failed to get request perms");
+			}
+			
+			
+			// Add to the Manage Apps Display
+			if (pkg_name.equals("com.android.phone") || pkg_name.equals("com.example.proauth")){	
+				// these apps aren't locked, and cannot be.
+				security_level = SecurityLevel.PUBLIC.toString();
+			} else {
+				apps.add(app_name);
+				ids.add(pkg_name);
+				//Log.d(TAG,"Image being saved:" + app_icon.toString());
+				app_icons.add(app_icon);
+				//Log.w(TAG, "Showing:" + rInfo.activityInfo.applicationInfo.packageName);
+
+				ass.add(new AppSecurity(app_name, pkg_name, security_level, app_icon));
+			}
+			e.putString(pkg_name, security_level);
 		}
 		appList = (ListView) findViewById(R.id.appList);
 		values = apps.toArray(new String[apps.size()]);
 		id_array = ids.toArray(new String[apps.size()]);
 		app_icon_array = app_icons.toArray(new Drawable[apps.size()]);
-
-		/*
-		 * ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
-		 * android.R.layout.simple_list_item_1, values);
-		 */
-		ArrayList<AppSecurity> ass = new ArrayList<AppSecurity>();
-
-		// Grab and Set Preferences
-		sp = this.getSharedPreferences(TAG, MODE_PRIVATE);
-		e = sp.edit();
 		
-		for (int i = 0; i < values.length; i++) {
-			String security_level = sp.getString(id_array[i],
-					SecurityLevel.PRIVATE.toString());
-			e.putString(values[i], security_level);
-			ass.add(new AppSecurity(values[i], id_array[i], security_level, app_icon_array[i]));
-		}
 		e.commit();
 
 		AppSecurityArrayAdapter adapter = new AppSecurityArrayAdapter(this,
@@ -242,6 +300,14 @@ public class ManageAppsActivity extends Activity {
 			return (this.app_name + " " + this.app_security_level);
 		}
 	}
+	
+
+	@Override
+	public void onBackPressed() {
+		Intent intent = new Intent(this, MainActivity.class);
+		startActivity(intent);
+	}
+
 
 	public class AppSecurityArrayAdapter extends ArrayAdapter<AppSecurity> {
 		private ArrayList<AppSecurity> apps;

@@ -31,7 +31,7 @@ public class MainActivity extends Activity {
 	TextView prefManageApps;
 	ListView prefList;
 	String TAG = "MainActivity";
-	String[] values = new String[] { "Manage Your Apps", "History and Logs",
+	String[] values = new String[] {"ProAuth Settings", "Manage Your Apps", 
 			"FAQ & Tutorial", "Button for Convenience" };
 
 	FileOutputStream log_file;
@@ -68,13 +68,15 @@ public class MainActivity extends Activity {
 						.getItemAtPosition(myItemInt));
 				Log.d(TAG, selectedFromList);
 				if (selectedFromList.equals(values[0])) {
-					Intent intent = new Intent(
-							"com.example.proauth.ManageAppsActivity");
-					startActivity(intent);
+
+					Intent intent = new Intent();
+					intent.setClass(MainActivity.this, LockScreenActivity.class);
+					intent.putExtra(LockScreenActivity.BlockedPackageName, "proauth_settings");
+					startActivityForResult(intent, 0);
+					
 				} else if (selectedFromList.equals(values[1])) {
-					Intent intent = new Intent(
-							"com.example.proauth.LockScreenActivity");
-					intent.putExtra("app_name", "com.android.email");
+					Intent intent = new Intent("com.example.proauth.LockScreenActivity");
+					intent.putExtra(LockScreenActivity.BlockedPackageName, "proauth_app_settings");
 					startActivity(intent);
 				} else if (selectedFromList.equals(values[2])) {
 					Intent intent = new Intent(
@@ -86,14 +88,10 @@ public class MainActivity extends Activity {
 							"com.example.proauth.ConvenienceActivity");
 					startActivity(intent);
 					*/
-					
-
 			    	Intent intent = new Intent();
 			    	intent.setClass(MainActivity.this, MonitorService.class);
 			    	startService(intent);
-					
 				} 
-
 			}
 		};
 		prefList.setOnItemClickListener(listener);
@@ -102,7 +100,7 @@ public class MainActivity extends Activity {
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
-		getMenuInflater().inflate(R.menu.activity_main, menu);
+		//getMenuInflater().inflate(R.menu.activity_main, menu);
 		return true;
 	}
 
@@ -115,11 +113,6 @@ public class MainActivity extends Activity {
 		 */
 
 		Intent intent = new Intent();
-		/*
-		intent.setClass(MainActivity.this, SetPreferencesActivity.class);
-		startActivityForResult(intent, 0);
-		*/
-
 		intent.setClass(MainActivity.this, LockScreenActivity.class);
 		intent.putExtra(LockScreenActivity.BlockedPackageName, "proauth_settings");
 		startActivityForResult(intent, 0);
@@ -135,7 +128,6 @@ public class MainActivity extends Activity {
 		/*
 		 * To make it simple, always re-load Preference setting.
 		 */
-
 		loadPref();
 	}
 
@@ -143,16 +135,8 @@ public class MainActivity extends Activity {
 		SharedPreferences mySharedPreferences = PreferenceManager
 				.getDefaultSharedPreferences(this);
 
-		boolean my_checkbox_preference = mySharedPreferences.getBoolean(
-				"security_level_0", false);
-		Log.d(TAG, "Checkbox pref:" + my_checkbox_preference);
-		// prefCheckBox.setChecked(my_checkbox_preference);
-
-		/*
-		String my_edittext_preference = mySharedPreferences.getString(
-				"edittext_preference", "");
-		prefManageApps.setText(my_edittext_preference);
-		*/
-
+		boolean monitor_on = mySharedPreferences.getBoolean(
+				"monitor_on", false);
+		Log.d(TAG, "Monitor should be on:" + monitor_on);
 	}
 }
