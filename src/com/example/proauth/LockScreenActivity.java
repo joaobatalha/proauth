@@ -40,7 +40,6 @@ public class LockScreenActivity extends Activity {
 	public EditText PasswordEnter;
 	public TextView WhichAppTextView;
 	public ImageView AppIconImageView;
-	public Button ToProAuthButton;
 	private String TAG = "LockScreenActivity";
 	private Context mContext;
 	private String app_name;
@@ -69,14 +68,6 @@ public class LockScreenActivity extends Activity {
 	private void getViews() {
 		BackgroundGlowImageView = (ImageView) findViewById(R.id.BackgroundGlowImageView);
 		AppIconImageView = (ImageView) findViewById(R.id.AppIcon);
-
-		ToProAuthButton = (Button) findViewById(R.id.EnterButton);
-		ToProAuthButton.setOnClickListener(new OnClickListener() {
-			public void onClick(View v) {
-				Intent intent = new Intent(mContext, MainActivity.class);
-				startActivity(intent);
-			}
-		});
 
 		PasswordEnter = (EditText) findViewById(R.id.PasswordEnter);
 		PasswordEnter.setOnEditorActionListener(
@@ -164,7 +155,14 @@ public class LockScreenActivity extends Activity {
 
 	@Override
 	public void onBackPressed() {
-		// Make it dead.
+		// Now directs the user to the home screen
+    	Intent intent = new Intent();
+    	intent
+    		.setAction(Intent.ACTION_MAIN)
+    		.addCategory(Intent.CATEGORY_HOME)
+    		.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+    	startActivity(intent);
+    	finish();
 	}
 
 	private void toggleShowWarning() {

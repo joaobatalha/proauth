@@ -23,7 +23,6 @@
     <string name="security_settings">Security Settings</string>
     <string name="enter_password">Enter Password</string>
     <string name="which_app_is_locked">to unlock it.</string>
-    <string name="enter">Go to ProAuth</string>
     
     
     <string name="title_activity_conv">Convenience Activity</string>
