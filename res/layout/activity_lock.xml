@@ -54,14 +54,6 @@
             android:layout_weight="4"
             android:gravity="center" 
             android:src="@drawable/active_lock"/>
-        
-        <Button
-            android:id="@+id/EnterButton"
-            android:layout_width="fill_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:text="@string/enter" />
     </LinearLayout>
 
 </merge>
