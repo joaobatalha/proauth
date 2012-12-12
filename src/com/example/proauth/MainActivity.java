@@ -143,4 +143,11 @@ public class MainActivity extends Activity {
 				"monitor_on", false);
 		Log.d(TAG, "Monitor should be on:" + monitor_on);
 	}
+	
+
+	@Override
+	public void onPause() {
+		super.onPause();
+		finish();
+	}
 }

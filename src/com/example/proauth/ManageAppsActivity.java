@@ -351,4 +351,11 @@ public class ManageAppsActivity extends Activity {
 			return v;
 		}
 	}
+	
+
+	@Override
+	public void onPause() {
+		super.onPause();
+		finish();
+	}
 }

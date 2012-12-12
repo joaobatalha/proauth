@@ -109,4 +109,10 @@ public class SetPreferencesActivity extends PreferenceActivity {
 	}
 	*/
 
+
+	@Override
+	public void onPause() {
+		super.onPause();
+		finish();
+	}
 }
