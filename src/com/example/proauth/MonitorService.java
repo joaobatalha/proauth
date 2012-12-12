@@ -30,6 +30,8 @@ public class MonitorService extends Service {
     private static final Class[] mStopForegroundSignature = new Class[] {
         boolean.class};
     
+    private static final String TAG = "MonitorService";
+    
     private NotificationManager mNM;
     private Method mStartForeground;
     private Method mStopForeground;
@@ -145,21 +147,25 @@ public class MonitorService extends Service {
     	BufferedReader br;
     	BlockActivityHandler blocking_handler;
     	SharedPreferences mPrefs;
+    	SharedPreferences mAppPrefs;
     	public LogMonitoringThread(BlockActivityHandler handler){
     		blocking_handler = handler;
     		mPrefs = PreferenceManager
     				.getDefaultSharedPreferences(mContext);
+    		mAppPrefs = getSharedPreferences(ManageAppsActivity.TAG, MODE_PRIVATE);
 
     	}
     	
     	private boolean requiresBlocking(String packageName){
-    		mPrefs = getSharedPreferences(ManageAppsActivity.TAG, MODE_PRIVATE);
-    		String appSecurityLevel = mPrefs.getString(
-    				packageName, "");
-    		if (appSecurityLevel.equals(SecurityLevel.PUBLIC.toString())){
-    			return false;
+    		SecurityLevel phoneSecurityLevel = SecurityLevel.valueOf(mPrefs.getString(
+    				MainActivity.PHONE_SECURITY_STATE, SecurityLevel.PUBLIC.toString()));
+    		SecurityLevel appSecurityLevel = SecurityLevel.valueOf(mAppPrefs.getString(
+    				packageName, SecurityLevel.PUBLIC.toString()));
+    		Log.d(TAG, "APP TO PHONE:" + appSecurityLevel + " " + phoneSecurityLevel);
+    		if (appSecurityLevel.value > phoneSecurityLevel.value){
+    			return true;
     		}
-    		return true;
+    		return false;
     	}
     	
     	@Override
@@ -207,6 +213,7 @@ public class MonitorService extends Service {
 							continue;
 						}
 						if(blocking_handler != null){
+							Log.d(TAG, "no blocking handler..");
 							blocking_handler.onActivityStarting(m.group(1), m.group(2));
 						}
 //					}

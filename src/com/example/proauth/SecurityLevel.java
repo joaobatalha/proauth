@@ -1,20 +1,15 @@
 package com.example.proauth;
 
 public enum SecurityLevel {
-	PRIVATE("Private"),
-	HIGH("High"),
-	MEDIUM("Medium"),
-	LOW("Low"),
-	PUBLIC("Public");
+	PRIVATE(4),
+	HIGH(3),
+	MEDIUM(2),
+	LOW(1),
+	PUBLIC(0);
 	
-	private String text;
+	public int value;
 	
-	private SecurityLevel(String text){
-		this.text = text;
-	}
-	
-	@Override
-	public String toString(){
-		return this.text;
+	private SecurityLevel(int value){
+		this.value = value;
 	}
 }
