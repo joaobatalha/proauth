@@ -26,8 +26,12 @@ public class BlockActivityHandler {
 	private Hashtable<String, Runnable> timeoutTable= new Hashtable<String, Runnable>();
 	private BroadcastReceiver passed;
 	private BroadcastReceiver not_passed;
+	private BroadcastReceiver screen_off;
+	private BroadcastReceiver screen_on;
 	public static String TAG = "BlockActivityHandler";
 	public int INTERVAL = 1 * 1000 * 5;		// 5 seconds
+
+	private SharedPreferences sp;
 	
 	public BlockActivityHandler(Context context) {
 		current_context = context;
@@ -37,43 +41,49 @@ public class BlockActivityHandler {
 		lastRunningPackage = getRunningPackage();
 		
 		Log.d("JOAO", "About to register the receivers");
-		
-		SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(current_context);
+		sp = PreferenceManager.getDefaultSharedPreferences(current_context);
 		INTERVAL = Integer.parseInt(sp.getString("timeout_duration", "5000"));
 			
+		
 		context.registerReceiver(passed = new BroadcastReceiver(){
 			@Override
 			public void onReceive(Context context, Intent intent) {
 				String packagename = intent.getStringExtra(LockScreenActivity.PACKAGE_NAME);
 				lastRunningPackage = packagename;
+				
+				SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(current_context);
+
+				if (sp.getBoolean("trigger_1", false)){
+					// set the phone state to private
+					Editor e = sp.edit();
+					e.putString(MainActivity.PHONE_SECURITY_STATE, SecurityLevel.PRIVATE.toString());
+					e.commit();
+					Log.d(TAG, "Current phone state:" + sp.getString(MainActivity.PHONE_SECURITY_STATE, SecurityLevel.PUBLIC.toString()));
+				}
 				if(packagename.equals("com.example.proauth")){
 					Log.d("JOAO", "Proauth was the app that passed, do not add to timeout table");
 					return;
 				}
 				lockPackage = packagename;
-				Log.d("JOAO","About to add " + packagename + "to timeoutTable");
-				//we should check if the timeout options is set
-				if(timeoutTable.contains(packagename)){
-					//extend the time
-					Log.d("JOAO", "Extended time for package " + packagename);
-					handler.removeCallbacks(timeoutTable.get(packagename));
+				
+				// Don't do timeouts for each app if disabled in preferences
+				if (sp.getBoolean("trigger_0", false)){
+					Log.d(TAG, "App timeout enabled");
+					Log.d("JOAO","About to add " + packagename + "to timeoutTable");
+					//we should check if the timeout options is set
+					if(timeoutTable.contains(packagename)){
+						//extend the time
+						Log.d("JOAO", "Extended time for package " + packagename);
+						handler.removeCallbacks(timeoutTable.get(packagename));
+					}
+					Runnable runnable = new timeoutCallback(packagename);
+					timeoutTable.put(packagename, runnable);
+					//Timeout is set to 1 minute
+					handler.postDelayed(runnable, 1 * 1000 * 60);
 				}
-				Runnable runnable = new timeoutCallback(packagename);
-				timeoutTable.put(packagename, runnable);
-				//Timeout is set to 1 minute
-				handler.postDelayed(runnable, 1 * 1000 * 60);
-				
-				// set the state to private
-				SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(current_context);
-				Editor e = sp.edit();
-				e.putString(MainActivity.PHONE_SECURITY_STATE, SecurityLevel.PRIVATE.toString());
-				e.commit();
-				Log.d(TAG, "Current phone state:" + sp.getString(MainActivity.PHONE_SECURITY_STATE, SecurityLevel.PUBLIC.toString()));
-				
 			}
 		}, new IntentFilter(LockScreenActivity.PASSED));
 		
-
 		context.registerReceiver(not_passed = new BroadcastReceiver(){
 			@Override
 			public void onReceive(Context context, Intent intent) {
@@ -83,45 +93,49 @@ public class BlockActivityHandler {
 		}, new IntentFilter(LockScreenActivity.NOT_PASSED));
 		
 
-		context.registerReceiver(not_passed = new BroadcastReceiver(){
-			@Override
-			public void onReceive(Context context, Intent intent) {
-				Log.d(TAG, "Screen Off");
-				//Log.d(TAG, "Timeout table size: " + timeoutTable.size());
-				
-				/*
-				SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(current_context);
-				Editor e = sp.edit();
-				e.putString(MainActivity.PHONE_SECURITY_STATE, SecurityLevel.PRIVATE.toString());
-				e.commit();
-				Log.d(TAG, "Current phone state:" + sp.getString(MainActivity.PHONE_SECURITY_STATE, SecurityLevel.PUBLIC.toString()));
-				*/
-				
-				if(timeoutTable.containsKey(MainActivity.PHONE_SECURITY_STATE)){
-					// this is wrong.
-					Log.wtf(TAG, "already counting down!!!");
-				} else {
-					Runnable runnable = new systemTimeoutCallback();
-					timeoutTable.put(MainActivity.PHONE_SECURITY_STATE, runnable);
-					handler.removeCallbacks(runnable);
-					handler.postDelayed(runnable, INTERVAL);
+		 //Don't do timeout dropping if disabled
+		if (sp.getBoolean("trigger_1", false)){     
+			context.registerReceiver(screen_off = new BroadcastReceiver(){
+				@Override
+				public void onReceive(Context context, Intent intent) {
+					Log.d(TAG, "Screen Off");
+					//Log.d(TAG, "Timeout table size: " + timeoutTable.size());
+					
+					/*
+					SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(current_context);
+					Editor e = sp.edit();
+					e.putString(MainActivity.PHONE_SECURITY_STATE, SecurityLevel.PRIVATE.toString());
+					e.commit();
+					Log.d(TAG, "Current phone state:" + sp.getString(MainActivity.PHONE_SECURITY_STATE, SecurityLevel.PUBLIC.toString()));
+					*/
+					
+					if(timeoutTable.containsKey(MainActivity.PHONE_SECURITY_STATE)){
+						// this is wrong.
+						Log.wtf(TAG, "already counting down!!!");
+					} else {
+						Runnable runnable = new systemTimeoutCallback();
+						timeoutTable.put(MainActivity.PHONE_SECURITY_STATE, runnable);
+						handler.removeCallbacks(runnable);
+						handler.postDelayed(runnable, INTERVAL);
+					}
 				}
-			}
-		}, new IntentFilter(Intent.ACTION_SCREEN_OFF));
-		
+			}, new IntentFilter(Intent.ACTION_SCREEN_OFF));
+			
 
-		context.registerReceiver(not_passed = new BroadcastReceiver(){
-			@Override
-			public void onReceive(Context context, Intent intent) {
-				Log.d(TAG, "Screen On");
-				
-				if(timeoutTable.containsKey(MainActivity.PHONE_SECURITY_STATE)){
-					Log.d(TAG, "Stop counting down");
-					handler.removeCallbacks(timeoutTable.get(MainActivity.PHONE_SECURITY_STATE));
-					timeoutTable.remove(MainActivity.PHONE_SECURITY_STATE);		
+			context.registerReceiver(screen_on = new BroadcastReceiver(){
+				@Override
+				public void onReceive(Context context, Intent intent) {
+					Log.d(TAG, "Screen On");
+					
+					if(timeoutTable.containsKey(MainActivity.PHONE_SECURITY_STATE)){
+						Log.d(TAG, "Stop counting down");
+						handler.removeCallbacks(timeoutTable.get(MainActivity.PHONE_SECURITY_STATE));
+						timeoutTable.remove(MainActivity.PHONE_SECURITY_STATE);		
+					}
 				}
-			}
-		}, new IntentFilter(Intent.ACTION_SCREEN_ON));
+			}, new IntentFilter(Intent.ACTION_SCREEN_ON));
+		}
+
 		
 	}
 	
@@ -245,5 +259,10 @@ public class BlockActivityHandler {
 	public void onDestroy(){
 		current_context.unregisterReceiver(passed);
 		current_context.unregisterReceiver(not_passed);
+		
+		if (sp.getBoolean("trigger_1", false)){
+			current_context.unregisterReceiver(screen_on);
+			current_context.unregisterReceiver(screen_off);
+		}
 	}
 }
