@@ -302,12 +302,13 @@ public class ManageAppsActivity extends Activity {
 	}
 	
 
+	/*
 	@Override
 	public void onBackPressed() {
 		Intent intent = new Intent(this, MainActivity.class);
 		startActivity(intent);
 	}
-
+	*/
 
 	public class AppSecurityArrayAdapter extends ArrayAdapter<AppSecurity> {
 		private ArrayList<AppSecurity> apps;

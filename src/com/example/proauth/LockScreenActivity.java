@@ -130,6 +130,7 @@ public class LockScreenActivity extends Activity {
 	@Override
 	public void onPause() {
 		super.onPause();
+		finish();
 		// unregisterReceiver(LockState);
 	}
 
