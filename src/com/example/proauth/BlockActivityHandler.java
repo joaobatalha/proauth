@@ -11,6 +11,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
+import android.hardware.SensorManager;
 import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.util.Log;
@@ -30,10 +31,15 @@ public class BlockActivityHandler {
 	private BroadcastReceiver screen_on;
 	public static String TAG = "BlockActivityHandler";
 	public int INTERVAL = 1 * 1000 * 5;		// 5 seconds
+	private AccelerometerState accelerometerState;
+	private boolean isScreenOn, isAccelMoving, isActive;
 
 	private SharedPreferences sp;
 	
 	public BlockActivityHandler(Context context) {
+		accelerometerState = new AccelerometerState(this, context);
+		isActive = true;
+		isScreenOn = true;
 		current_context = context;
 		lockActivityName = ".LockScreenActivity";
 		handler = new Handler();
@@ -109,15 +115,8 @@ public class BlockActivityHandler {
 					Log.d(TAG, "Current phone state:" + sp.getString(MainActivity.PHONE_SECURITY_STATE, SecurityLevel.PUBLIC.toString()));
 					*/
 					
-					if(timeoutTable.containsKey(MainActivity.PHONE_SECURITY_STATE)){
-						// this is wrong.
-						Log.wtf(TAG, "already counting down!!!");
-					} else {
-						Runnable runnable = new systemTimeoutCallback();
-						timeoutTable.put(MainActivity.PHONE_SECURITY_STATE, runnable);
-						handler.removeCallbacks(runnable);
-						handler.postDelayed(runnable, INTERVAL);
-					}
+					isScreenOn = false;
+					handleScreenAndAccel(isScreenOn, isAccelMoving);
 				}
 			}, new IntentFilter(Intent.ACTION_SCREEN_OFF));
 			
@@ -127,16 +126,48 @@ public class BlockActivityHandler {
 				public void onReceive(Context context, Intent intent) {
 					Log.d(TAG, "Screen On");
 					
-					if(timeoutTable.containsKey(MainActivity.PHONE_SECURITY_STATE)){
-						Log.d(TAG, "Stop counting down");
-						handler.removeCallbacks(timeoutTable.get(MainActivity.PHONE_SECURITY_STATE));
-						timeoutTable.remove(MainActivity.PHONE_SECURITY_STATE);		
-					}
+					isScreenOn = true;
+					handleScreenAndAccel(isScreenOn, isAccelMoving);
 				}
 			}, new IntentFilter(Intent.ACTION_SCREEN_ON));
 		}
 
 		
+	}
+	
+	
+	private void handleScreenAndAccel(boolean isScreenOn, boolean isAccelMoving) {
+		if (isScreenOn && isAccelMoving) {
+			if (!isActive) {
+				isActive = true;
+				if (timeoutTable.containsKey(MainActivity.PHONE_SECURITY_STATE)) {
+					Log.d(TAG, "Stop counting down");
+					handler.removeCallbacks(timeoutTable.get(MainActivity.PHONE_SECURITY_STATE));
+					timeoutTable.remove(MainActivity.PHONE_SECURITY_STATE);
+				}
+			}
+		} else if (!isScreenOn && !isAccelMoving) {
+			if (isActive) {
+				isActive = false;
+				if (timeoutTable.containsKey(MainActivity.PHONE_SECURITY_STATE)) {
+					// this is wrong.
+					Log.wtf(TAG, "already counting down!!!");
+				} else {
+					Log.d(TAG, "start counting down");
+					Runnable runnable = new systemTimeoutCallback();
+					timeoutTable.put(MainActivity.PHONE_SECURITY_STATE, runnable);
+					handler.removeCallbacks(runnable);
+					handler.postDelayed(runnable, INTERVAL);
+				}
+			}
+		}
+	}
+	
+	
+	public void onAccelerometerStateChange(boolean isCurrStateMoving) {
+		Log.d(TAG, "Accelerometer state is: " + (isCurrStateMoving ? "moving" : "not moving"));
+		isAccelMoving = isCurrStateMoving;
+		handleScreenAndAccel(isScreenOn, isAccelMoving);
 	}
 	
 	private class timeoutCallback implements Runnable{
