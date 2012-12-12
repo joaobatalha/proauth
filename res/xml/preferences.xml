@@ -11,21 +11,21 @@
                 android:defaultValue="false"/>
     </PreferenceCategory>
     
-    
+    <!--  
     <PreferenceCategory
             android:title="Enable Security Levels">
 
         <CheckBoxPreference
                 android:key="security_level_4"
                 android:title="Private"
-                android:summary="Security level that requires authentication every time."
+                android:summary="Security level maintained while phone is in contact with you and active."
                 android:enabled="false"
                 android:defaultValue="true"/>
         
         <CheckBoxPreference
                 android:key="security_level_3"
                 android:title="High"
-                android:summary="Stays available while in contact. (Requires Accelerometer)" 
+                android:summary="Stays available in familiar locations. (Requires GPS)" 
                 android:defaultValue="false"
             	android:dependency="trigger_2"
             	/>
@@ -33,7 +33,7 @@
         <CheckBoxPreference
                 android:key="security_level_2"
                 android:title="Medium"
-                android:summary="Stays available after losing contact. (Requires Timeout)" 
+                android:summary="Stays available after losing contact. (Requires System Timeout)" 
                 android:defaultValue="true"
             	android:dependency="trigger_1"
             	/>
@@ -41,7 +41,7 @@
         <CheckBoxPreference
                 android:key="security_level_1"
                 android:title="Low"
-                android:summary="Stays available in familiar locations. (Requires GPS)" 
+                android:summary="Stays available longer after losing contact. (Requires System Timeout)" 
                 android:defaultValue="false"
             	android:dependency="trigger_3"
                 />
@@ -54,6 +54,7 @@
                 android:defaultValue="true"/>
 
     </PreferenceCategory>
+    -->
 
     <PreferenceCategory
             android:title="Enable Triggers">
@@ -62,12 +63,14 @@
                 android:key="trigger_0"
                 android:title="Individual App Timeout"
                 android:summary="Apps remain unlocked for 5 minutes after unlocking it"
-                android:defaultValue="false"/>
+                android:enabled="false"
+                android:defaultValue="false"
+                />
         
         <CheckBoxPreference
                 android:key="trigger_1"
                 android:title="Full System Timeout"
-                android:summary="Maintain security state with timeouts"
+                android:summary="Maintain security state with timeouts."
                 android:defaultValue="true"
                 />
         
@@ -83,11 +86,13 @@
         <CheckBoxPreference
                 android:key="trigger_2"
                 android:title="Accelerometer"
+                android:summary="Uses accelerometer input to guess phone security."
                 android:defaultValue="false"/>
         
         <CheckBoxPreference
                 android:key="trigger_3"
-                android:title="GPD"
+                android:title="GPS"
+                android:summary="Keeps phone at HIGH security level while at safe locations."
                 android:defaultValue="false"/>
 
     </PreferenceCategory>

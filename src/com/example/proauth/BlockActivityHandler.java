@@ -181,11 +181,13 @@ public class BlockActivityHandler {
 		}	
 	}
 	
-	private void dropPhoneSecurityLevel(){
+	private boolean dropPhoneSecurityLevel(){
 		SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(current_context);
-	    boolean high = sp.getBoolean("security_level_3", false);
-	    boolean medium = sp.getBoolean("security_level_2", false);
-	    boolean low = sp.getBoolean("security_level_1", false);
+	    //boolean high = sp.getBoolean("trigger_2", false);
+	    boolean high = false;
+
+	    boolean medium = sp.getBoolean("trigger_1", false);
+	    boolean low = sp.getBoolean("trigger_3", false);
 	    
 		String prev_level = sp.getString(MainActivity.PHONE_SECURITY_STATE, SecurityLevel.PUBLIC.toString());
 		//Log.d(TAG, "Current level " + prev_level);
@@ -216,6 +218,10 @@ public class BlockActivityHandler {
 		e.commit();
 		
 		Log.d(TAG, "DROPPED! Current phone state:" + sp.getString(MainActivity.PHONE_SECURITY_STATE, SecurityLevel.PUBLIC.toString()));
+		if (lower_level.equals(SecurityLevel.PUBLIC)){
+			return false;
+		}
+		return true;
 	}
 	
 	private class systemTimeoutCallback implements Runnable{
@@ -224,10 +230,12 @@ public class BlockActivityHandler {
 		@Override
 		public void run() {
 			// drop down to the next level
-			dropPhoneSecurityLevel();
+			boolean can_still_drop = dropPhoneSecurityLevel();
 			Log.d(TAG, "Dropping!");
 			timeoutTable.put(MainActivity.PHONE_SECURITY_STATE, this);
-			handler.postDelayed(this, INTERVAL);
+			if (can_still_drop){
+				handler.postDelayed(this, INTERVAL);
+			}
 		}	
 	}
 	
