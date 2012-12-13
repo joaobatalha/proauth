@@ -33,7 +33,7 @@ public class MainActivity extends Activity {
 	String TAG = "MainActivity";
 	public static String PHONE_SECURITY_STATE = "com.example.proauth.phone_security_state";
 	String[] values = new String[] {"ProAuth Settings", "Manage Your Apps", 
-			"FAQ & Tutorial", "Button for Convenience" };
+			"FAQ & Tutorial"};
 
 	FileOutputStream log_file;
 	public static String LOG_FILE = "proauth_log.txt";
@@ -78,16 +78,12 @@ public class MainActivity extends Activity {
 					Intent intent = new Intent(
 							"com.example.proauth.FAQActivity");
 					startActivity(intent);
-				} else if (selectedFromList.equals(values[3])) {
-					/*
-					Intent intent = new Intent(
-							"com.example.proauth.ConvenienceActivity");
-					startActivity(intent);
-					*/
+				} /*else if (selectedFromList.equals(values[3])) {
+
 			    	Intent intent = new Intent();
 			    	intent.setClass(MainActivity.this, MonitorService.class);
 			    	startService(intent);
-				} 
+				} */
 			}
 		};
 		prefList.setOnItemClickListener(listener);

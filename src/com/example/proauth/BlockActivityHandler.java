@@ -21,6 +21,7 @@ public class BlockActivityHandler {
 	private Context current_context;
 	private String lockActivityName;
 	private String lastRunningPackage;
+	private String lastRunningActivity;
 	private String lockPackage = "com.example.proauth";
 	private ActivityManager activity_manager;
 	private Handler handler;
@@ -56,6 +57,7 @@ public class BlockActivityHandler {
 			public void onReceive(Context context, Intent intent) {
 				String packagename = intent.getStringExtra(LockScreenActivity.PACKAGE_NAME);
 				lastRunningPackage = packagename;
+				lastRunningActivity = intent.getStringExtra(LockScreenActivity.ACTIVITY_NAME);
 				
 				SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(current_context);
 
@@ -251,24 +253,19 @@ public class BlockActivityHandler {
 			// Here we do not want to block the password activity
 			// But we do want to block the Preferences activity
 			if (packageName.equals("com.example.proauth")) {
-				Log.d("JOAO","A");
 				if (activityName.equals(lockActivityName)){
 					return;
 				}
 				blockActivity(packageName, activityName);
 			}
-			if (packageName.equals(lastRunningPackage)) return;
-			// Here we are going to want to go through the list of blocked apps
-			// And check if the packageName is in that list
-//			Log.d("JOAO", "packageNames variable" + packageName);
 			
-//			if (packageName.equals("com.example.proauth")) {
-//				lastRunningPackage = packageName;
-//				return;
-//			} /*else if (packageName.equals(lockPackage)){
-				// Do nothing.
-//			} */ else {
-			Log.d("JOAO", "B");
+			//This fixes the bug where an App would remain unlock after it was locked
+			//Also does not ask you to unlock twice when for instance using the search app
+			if (packageName.equals(lastRunningPackage) && !activityName.equals(lastRunningActivity)) {
+					return;
+				}
+
+
 				if (timeoutTable.containsKey(packageName)){
 					Log.d("JOAO", "Allowed package " + packageName + " because the timeout had not expired yet");
 					return;
@@ -276,9 +273,6 @@ public class BlockActivityHandler {
 				}
 				blockActivity(packageName, activityName);
 				return;
-//				lastRunningPackage = packageName;
-//				Log.d("JOAO", "Last running package: " + lastRunningPackage);
-//			}
 		}
 	}
 
