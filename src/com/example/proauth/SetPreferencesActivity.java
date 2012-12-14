@@ -81,7 +81,6 @@ public class SetPreferencesActivity extends PreferenceActivity {
         }
         
         
-        
         app_timeout.setOnPreferenceClickListener(new OnPreferenceClickListener(){
 			@Override
 			public boolean onPreferenceClick(Preference arg0) {
