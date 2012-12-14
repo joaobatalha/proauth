@@ -18,9 +18,10 @@ public class StartupReceiver extends BroadcastReceiver {
 		boolean monitor_on = sp.getBoolean("monitor_on", false);
 		arg0.startService(new Intent(arg0, MonitorService.class));	
 //		if (intent.getAction().equals(Intent.ACTION_BOOT_COMPLETED)){
-//				if (monitor_on){
-//					arg0.startService(new Intent(arg0, MonitorService.class));	
-//				}
+				if (monitor_on){
+					arg0.startService(new Intent(arg0, MonitorService.class));	
+				}
 //		}
+
 	}
 }

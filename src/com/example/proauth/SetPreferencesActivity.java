@@ -64,6 +64,14 @@ public class SetPreferencesActivity extends PreferenceActivity {
         app_timeout = (CheckBoxPreference) preferenceManager.findPreference("trigger_0"); 
         system_timeout = (CheckBoxPreference) preferenceManager.findPreference("trigger_1"); 
         
+        
+        app_timeout.setEnabled(app_timeout.isChecked());
+        if(!app_timeout.isEnabled()){
+        	system_timeout.setEnabled(true);
+        }
+        
+        
+        
         app_timeout.setOnPreferenceClickListener(new OnPreferenceClickListener(){
 			@Override
 			public boolean onPreferenceClick(Preference arg0) {
@@ -99,6 +107,14 @@ public class SetPreferencesActivity extends PreferenceActivity {
         
 
         
+	}
+	
+	@Override
+	public void onPause() {
+		super.onPause();
+		Intent intent = new Intent("com.example.proauth.FINISH_ACTIVITY");
+    	sendBroadcast(intent);
+		finish();
 	}
 	
 	/*
