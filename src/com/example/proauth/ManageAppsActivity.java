@@ -240,6 +240,14 @@ public class ManageAppsActivity extends Activity {
 		// getMenuInflater().inflate(R.menu.activity_main, menu);
 		return true;
 	}
+	
+	@Override
+	public void onPause() {
+		super.onPause();
+		Intent intent = new Intent("com.example.proauth.FINISH_ACTIVITY");
+    	sendBroadcast(intent);
+		finish();
+	}
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {

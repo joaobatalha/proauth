@@ -48,11 +48,12 @@ public class MonitorService extends Service {
         }
         
         mContext = this;
-        
+
 		//set button
 		SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
 		Editor e = sp.edit();
 		e.putBoolean("monitor_on", true);
+		e.putString(MainActivity.PHONE_SECURITY_STATE, SecurityLevel.PUBLIC.toString());
 		e.commit();
         
         if(init == 0){
@@ -173,7 +174,7 @@ public class MonitorService extends Service {
 				return false;
 			}else{//system timeout is not turned on
 				Log.d("JOAO", "App security level: " + appSecurityLevel);
-				if((appSecurityLevel.toString()).equals("PRIVATE")){
+				if((appSecurityLevel.toString()).equals(SecurityLevel.PRIVATE.toString())){
 					return true;
 				}
 				else{

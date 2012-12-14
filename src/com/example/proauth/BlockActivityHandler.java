@@ -60,6 +60,8 @@ public class BlockActivityHandler {
 				lastRunningActivity = intent.getStringExtra(LockScreenActivity.ACTIVITY_NAME);
 				
 				SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(current_context);
+				
+				Log.d("JOAO","A");
 
 				if (sp.getBoolean("trigger_1", false)){
 					// set the phone state to private
@@ -76,6 +78,7 @@ public class BlockActivityHandler {
 				
 				// Don't do timeouts for each app if disabled in preferences
 				if (sp.getBoolean("trigger_0", false)){
+					Log.d("JOAO","B");
 					Log.d(TAG, "App timeout enabled");
 					Log.d("JOAO","About to add " + packagename + "to timeoutTable");
 					//we should check if the timeout options is set
@@ -265,8 +268,8 @@ public class BlockActivityHandler {
 					return;
 				}
 
-
-				if (timeoutTable.containsKey(packageName)){
+				boolean app_timeout = sp.getBoolean("trigger_0", false);
+				if (timeoutTable.containsKey(packageName) && app_timeout){
 					Log.d("JOAO", "Allowed package " + packageName + " because the timeout had not expired yet");
 					return;
 					
