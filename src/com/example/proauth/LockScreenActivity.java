@@ -1,34 +1,23 @@
 package com.example.proauth;
 
-import java.util.prefs.Preferences;
-
 import android.app.Activity;
-import android.app.KeyguardManager;
-import android.app.KeyguardManager.KeyguardLock;
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
+import android.content.res.Configuration;
 import android.graphics.PixelFormat;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.util.Log;
 import android.view.KeyEvent;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.Window;
 import android.view.inputmethod.EditorInfo;
-import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -47,6 +36,7 @@ public class LockScreenActivity extends Activity {
 	public static final String BlockedActivityName = "BlockedActivity";
 	public static final String BlockedPackageName = "BlockedPackage";
 	public static final String PACKAGE_NAME = "com.example.proauth.PackageName";
+	public static final String ACTIVITY_NAME = "com.example.proauth.ActivityName";
 	public static final String PASSED = "com.example.proauth.PASSED";
 	public static final String NOT_PASSED = "com.example.proauth.NOT_PASSED";
 	
@@ -191,7 +181,8 @@ public class LockScreenActivity extends Activity {
 			this.sendBroadcast(
 					new Intent()
 						.setAction(PASSED)
-						.putExtra(PACKAGE_NAME, getIntent().getStringExtra(BlockedPackageName)));
+						.putExtra(PACKAGE_NAME, getIntent().getStringExtra(BlockedPackageName))
+						.putExtra(ACTIVITY_NAME, getIntent().getStringExtra(BlockedActivityName)));
 			
 			finish();
 			/*
@@ -220,6 +211,12 @@ public class LockScreenActivity extends Activity {
     	finish();
 		
 	}
+	
+	  @Override 
+	    public void onConfigurationChanged(Configuration newConfig) 
+	    { 
+	        super.onConfigurationChanged(newConfig);
+	    }
 	
 	@Override
 	public void onStop(){

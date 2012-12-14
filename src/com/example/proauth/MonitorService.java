@@ -5,22 +5,16 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.Iterator;
-import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-
-import android.app.ActivityManager;
-import android.app.ActivityManager.RecentTaskInfo;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
-import android.hardware.SensorManager;
+import android.content.SharedPreferences.Editor;
 import android.os.IBinder;
 import android.preference.PreferenceManager;
 import android.util.Log;
@@ -54,6 +48,12 @@ public class MonitorService extends Service {
         }
         
         mContext = this;
+        
+		//set button
+		SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
+		Editor e = sp.edit();
+		e.putBoolean("monitor_on", true);
+		e.commit();
         
         if(init == 0){
         	init = 1;
@@ -208,7 +208,6 @@ public class MonitorService extends Service {
 					}
 					
 					Log.d("JOAO", "Line matched in the log: " + line);	
-//					if (!m.group(1).equals("com.example.proauth")){
 						Log.i("JOAO", "Found activity launching: " + m.group(1) + "  /   " + m.group(2));
 						if (!requiresBlocking(m.group(1))){
 							continue;
@@ -217,7 +216,7 @@ public class MonitorService extends Service {
 							Log.d(TAG, "no blocking handler..");
 							blocking_handler.onActivityStarting(m.group(1), m.group(2));
 						}
-//					}
+
 				}
 			} catch (IOException e) {
 				e.printStackTrace();
@@ -229,6 +228,13 @@ public class MonitorService extends Service {
 	public void onDestroy(){
 		log_monitor_thread.interrupt();
 		log_monitor_thread = null;
+		
+		//unset button
+		SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
+		Editor e = sp.edit();
+		e.putBoolean("monitor_on", false);
+		e.commit();
+		
 		stopForegroundCompat(R.string.service_running);
 	}
 	
