@@ -1,15 +1,13 @@
 package com.example.proauth;
 
-import java.io.BufferedReader;
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
+
 import android.app.Activity;
-import android.app.admin.DevicePolicyManager;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.os.Bundle;
@@ -18,13 +16,10 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
-import android.widget.CheckBox;
 import android.widget.ListView;
-import android.widget.TextView;
 
 public class MainActivity extends Activity {
 
@@ -42,6 +37,7 @@ public class MainActivity extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
+		registerFinishReceiver();
 
 		Log.e(TAG, this.getApplicationContext().getFilesDir().toString());
 		try {
@@ -140,10 +136,21 @@ public class MainActivity extends Activity {
 		Log.d(TAG, "Monitor should be on:" + monitor_on);
 	}
 	
-
-	@Override
-	public void onPause() {
-		super.onPause();
-		finish();
+	private void registerFinishReceiver(){
+		IntentFilter filter = new IntentFilter("com.example.proauth.FINISH_ACTIVITY");
+		registerReceiver(finishedReceiver, filter);
 	}
+	
+    BroadcastReceiver finishedReceiver = new BroadcastReceiver(){ 
+        public void onReceive(Context context, Intent intent){ 
+        	Log.d("JOAO", "Finishing Main");
+        MainActivity.this.finish();   
+        } 
+    }; 
+    
+    @Override
+    public void onDestroy(){
+    	unregisterReceiver(finishedReceiver);
+    	super.onDestroy();
+    }
 }

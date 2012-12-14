@@ -16,10 +16,12 @@ public class StartupReceiver extends BroadcastReceiver {
 		
 		SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(arg0);
 		boolean monitor_on = sp.getBoolean("monitor_on", false);
-		if (intent.getAction().equals(Intent.ACTION_BOOT_COMPLETED) && monitor_on){
+		arg0.startService(new Intent(arg0, MonitorService.class));	
+//		if (intent.getAction().equals(Intent.ACTION_BOOT_COMPLETED)){
 				if (monitor_on){
 					arg0.startService(new Intent(arg0, MonitorService.class));	
 				}
-		}
+//		}
+
 	}
 }

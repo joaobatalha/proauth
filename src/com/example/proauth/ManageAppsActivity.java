@@ -64,12 +64,12 @@ public class ManageAppsActivity extends Activity {
 			"android.permission.CALL_PHONE",
 			"android.permission.DELETE_PACKAGES",
 			"android.permission.READ_LOGS",
+			"android.permission.GET_TASKS",
 			"android.permission.SEND_SMS"));
 	
 	static final HashSet<String> mediumPerms = new HashSet<String>(Arrays.asList("android.permission.ACCESS_FINE_LOCATION",
 			 "android.permission.BLUETOOTH",
 			"android.permission.CAMERA",
-			 "android.permission.GET_TASKS",
 			"android.permission.MODIFY_PHONE_STATE",
 			 "android.permission.READ_CALENDAR",
 			"android.permission.READ_CONTACTS"));
@@ -162,8 +162,8 @@ public class ManageAppsActivity extends Activity {
 				//Log.d(TAG,"Image being saved:" + app_icon.toString());
 				app_icons.add(app_icon);
 				//Log.w(TAG, "Showing:" + rInfo.activityInfo.applicationInfo.packageName);
-
 				ass.add(new AppSecurity(app_name, pkg_name, security_level, app_icon));
+
 			}
 			e.putString(pkg_name, security_level);
 		}
@@ -239,6 +239,14 @@ public class ManageAppsActivity extends Activity {
 		// Inflate the menu; this adds items to the action bar if it is present.
 		// getMenuInflater().inflate(R.menu.activity_main, menu);
 		return true;
+	}
+	
+	@Override
+	public void onPause() {
+		super.onPause();
+		Intent intent = new Intent("com.example.proauth.FINISH_ACTIVITY");
+    	sendBroadcast(intent);
+		finish();
 	}
 
 	@Override
