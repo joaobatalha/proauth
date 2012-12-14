@@ -190,11 +190,4 @@ public class SetPreferencesActivity extends PreferenceActivity {
 		super.onDestroy();
 		doUnbindService();
 	}
-
-
-	@Override
-	public void onPause() {
-		super.onPause();
-		finish();
-	}
 }
