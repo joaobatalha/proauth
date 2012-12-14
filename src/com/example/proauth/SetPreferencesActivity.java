@@ -175,5 +175,4 @@ public class SetPreferencesActivity extends PreferenceActivity {
 		super.onDestroy();
 		doUnbindService();
 	}
-
 }
