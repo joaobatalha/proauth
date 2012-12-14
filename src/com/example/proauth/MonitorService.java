@@ -162,11 +162,27 @@ public class MonitorService extends Service {
     				MainActivity.PHONE_SECURITY_STATE, SecurityLevel.PUBLIC.toString()));
     		SecurityLevel appSecurityLevel = SecurityLevel.valueOf(mAppPrefs.getString(
     				packageName, SecurityLevel.PUBLIC.toString()));
-    		Log.d(TAG, "APP TO PHONE:" + appSecurityLevel + " " + phoneSecurityLevel);
-    		if (appSecurityLevel.value > phoneSecurityLevel.value){
-    			return true;
-    		}
-    		return false;
+    		
+			boolean system_timeout = mPrefs.getBoolean("trigger_1", false);
+			
+			if(system_timeout){
+				Log.d(TAG, "APP TO PHONE:" + appSecurityLevel + " " + phoneSecurityLevel);
+				if (appSecurityLevel.value > phoneSecurityLevel.value){
+					return true;
+				}
+				return false;
+			}else{//system timeout is not turned on
+				Log.d("JOAO", "App security level: " + appSecurityLevel);
+				if((appSecurityLevel.toString()).equals("PRIVATE")){
+					return true;
+				}
+				else{
+					return false;
+				}
+			}
+
+				
+			
     	}
     	
     	@Override
@@ -207,9 +223,14 @@ public class MonitorService extends Service {
 						continue;
 					}
 					
+					
+					
+
+					
 					Log.d("JOAO", "Line matched in the log: " + line);	
 						Log.i("JOAO", "Found activity launching: " + m.group(1) + "  /   " + m.group(2));
 						if (!requiresBlocking(m.group(1))){
+							Log.d("JOAO", "DID not require blocking");
 							continue;
 						}
 						if(blocking_handler != null){
