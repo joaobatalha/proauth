@@ -34,7 +34,6 @@ public class BlockActivityHandler {
 	public int INTERVAL = 1 * 1000 * 5;		// 5 seconds
 	private AccelerometerState accelerometerState;
 	private boolean isScreenOn, isAccelMoving, isActive;
-
 	private SharedPreferences sp;
 	
 	public BlockActivityHandler(Context context) {
@@ -45,9 +44,7 @@ public class BlockActivityHandler {
 		lockActivityName = ".LockScreenActivity";
 		handler = new Handler();
 		activity_manager = (ActivityManager)current_context.getSystemService(Context.ACTIVITY_SERVICE);
-		lastRunningPackage = getRunningPackage();
-		
-		Log.d("JOAO", "About to register the receivers");
+		lastRunningPackage = getRunningPackage();		
 		sp = PreferenceManager.getDefaultSharedPreferences(current_context);
 		INTERVAL = Integer.parseInt(sp.getString("timeout_duration", "5000"));
 			
@@ -61,8 +58,6 @@ public class BlockActivityHandler {
 				
 				SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(current_context);
 				
-				Log.d("JOAO","A");
-
 				if (sp.getBoolean("trigger_1", false)){
 					// set the phone state to private
 					Editor e = sp.edit();
@@ -70,10 +65,10 @@ public class BlockActivityHandler {
 					e.commit();
 					Log.d(TAG, "Current phone state:" + sp.getString(MainActivity.PHONE_SECURITY_STATE, SecurityLevel.PUBLIC.toString()));
 				}
-				if(packagename.equals("com.example.proauth")){
-					Log.d("JOAO", "Proauth was the app that passed, do not add to timeout table");
+				if(packagename.equals("com.example.proauth")){//If proauth is the app that passed, don't add to timeout table
 					return;
 				}
+				
 				lockPackage = packagename;
 				
 				// Don't do timeouts for each app if disabled in preferences
@@ -81,10 +76,8 @@ public class BlockActivityHandler {
 					Log.d("JOAO","B");
 					Log.d(TAG, "App timeout enabled");
 					Log.d("JOAO","About to add " + packagename + "to timeoutTable");
-					//we should check if the timeout options is set
-					if(timeoutTable.contains(packagename)){
+					if(timeoutTable.containsKey(packagename)){
 						//extend the time
-						Log.d("JOAO", "Extended time for package " + packagename);
 						handler.removeCallbacks(timeoutTable.get(packagename));
 					}
 					Runnable runnable = new timeoutCallback(packagename);
