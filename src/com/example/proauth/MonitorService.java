@@ -15,6 +15,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
+import android.os.Binder;
 import android.os.IBinder;
 import android.preference.PreferenceManager;
 import android.util.Log;
@@ -33,6 +34,7 @@ public class MonitorService extends Service {
     private Object[] mStartForegroundArgs = new Object[2];
     private Object[] mStopForegroundArgs = new Object[1];
     private Context mContext;
+    private final IBinder mBinder = new LocalBinder();
     
     @Override
     public void onCreate() {
@@ -117,17 +119,29 @@ public class MonitorService extends Service {
         //setForeground(false);
     }
 
-	@Override
+   
+	
+   public class LocalBinder extends Binder {
+        MonitorService getService() {
+            return MonitorService.this;
+        }
+    }
+
+	
+    @Override
 	public IBinder onBind(Intent intent) {
-		// TODO Auto-generated method stub
-		return null;
+    	Log.d("JOAO", "SOMEONE BINDED TO ME");
+		return mBinder;
 	}
+	
+	
 
 	private static Thread log_monitor_thread;
 	private static String get_log_command;
 	private static String clear_log_command;
 	private static Pattern ActivityPattern;
 	private static int init;
+	private BlockActivityHandler blocking_handler;
 	
 	//Code to execute when service is started 
 	@Override
@@ -144,10 +158,17 @@ public class MonitorService extends Service {
 		return Service.START_STICKY;
 	}
 	
+	public void registerHandlerScreenListeners(){
+		if(blocking_handler != null){
+			blocking_handler.registerScreenListeners();
+		}
+		
+	}
+	
 	private class LogMonitoringThread extends Thread{
 
     	BufferedReader br;
-    	BlockActivityHandler blocking_handler;
+//    	BlockActivityHandler blocking_handler;
     	SharedPreferences mPrefs;
     	SharedPreferences mAppPrefs;
     	public LogMonitoringThread(BlockActivityHandler handler){
@@ -250,6 +271,7 @@ public class MonitorService extends Service {
 	public void onDestroy(){
 		log_monitor_thread.interrupt();
 		log_monitor_thread = null;
+		blocking_handler = null;
 		
 		//unset button
 		SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);

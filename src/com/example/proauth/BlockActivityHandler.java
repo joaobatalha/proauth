@@ -105,11 +105,49 @@ public class BlockActivityHandler {
 		
 
 		 //Don't do timeout dropping if disabled
+		Log.d("JOAO", "Trigger_1 is: " + sp.getBoolean("trigger_1", false));
+		registerScreenListeners();
+//		if (sp.getBoolean("trigger_1", false)){     
+//			context.registerReceiver(screen_off = new BroadcastReceiver(){
+//				@Override
+//				public void onReceive(Context context, Intent intent) {
+//					Log.d("JOAO", "Screen Off");
+//					//Log.d(TAG, "Timeout table size: " + timeoutTable.size());
+//					
+//					/*
+//					SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(current_context);
+//					Editor e = sp.edit();
+//					e.putString(MainActivity.PHONE_SECURITY_STATE, SecurityLevel.PRIVATE.toString());
+//					e.commit();
+//					Log.d(TAG, "Current phone state:" + sp.getString(MainActivity.PHONE_SECURITY_STATE, SecurityLevel.PUBLIC.toString()));
+//					*/
+//					
+//					isScreenOn = false;
+//					handleScreenAndAccel(isScreenOn, isAccelMoving);
+//				}
+//			}, new IntentFilter(Intent.ACTION_SCREEN_OFF));
+//			
+//
+//			context.registerReceiver(screen_on = new BroadcastReceiver(){
+//				@Override
+//				public void onReceive(Context context, Intent intent) {
+//					Log.d(TAG, "Screen On");
+//					
+//					isScreenOn = true;
+//					handleScreenAndAccel(isScreenOn, isAccelMoving);
+//				}
+//			}, new IntentFilter(Intent.ACTION_SCREEN_ON));
+//		}
+
+		
+	}
+	
+	public void registerScreenListeners(){
 		if (sp.getBoolean("trigger_1", false)){     
-			context.registerReceiver(screen_off = new BroadcastReceiver(){
+			current_context.registerReceiver(screen_off = new BroadcastReceiver(){
 				@Override
 				public void onReceive(Context context, Intent intent) {
-					Log.d(TAG, "Screen Off");
+					Log.d("JOAO", "Screen Off");
 					//Log.d(TAG, "Timeout table size: " + timeoutTable.size());
 					
 					/*
@@ -126,7 +164,7 @@ public class BlockActivityHandler {
 			}, new IntentFilter(Intent.ACTION_SCREEN_OFF));
 			
 
-			context.registerReceiver(screen_on = new BroadcastReceiver(){
+			current_context.registerReceiver(screen_on = new BroadcastReceiver(){
 				@Override
 				public void onReceive(Context context, Intent intent) {
 					Log.d(TAG, "Screen On");
@@ -137,9 +175,7 @@ public class BlockActivityHandler {
 			}, new IntentFilter(Intent.ACTION_SCREEN_ON));
 		}
 
-		
 	}
-	
 	
 	private void handleScreenAndAccel(boolean isScreenOn, boolean isAccelMoving) {
 		if (isScreenOn && isAccelMoving) {
@@ -195,7 +231,7 @@ public class BlockActivityHandler {
 	    boolean low = sp.getBoolean("trigger_3", false);
 	    
 		String prev_level = sp.getString(MainActivity.PHONE_SECURITY_STATE, SecurityLevel.PUBLIC.toString());
-		//Log.d(TAG, "Current level " + prev_level);
+		Log.d("JOAO", "Current level " + prev_level);
 		String lower_level = SecurityLevel.PUBLIC.toString();
 		if (prev_level.equals(SecurityLevel.PRIVATE.toString())){
 			if (high){
@@ -296,9 +332,10 @@ public class BlockActivityHandler {
 		current_context.unregisterReceiver(passed);
 		current_context.unregisterReceiver(not_passed);
 		
-		if (sp.getBoolean("trigger_1", false)){
-			current_context.unregisterReceiver(screen_on);
-			current_context.unregisterReceiver(screen_off);
-		}
+			if(screen_on != null){
+				current_context.unregisterReceiver(screen_on);
+				current_context.unregisterReceiver(screen_off);
+			}
+
 	}
 }
