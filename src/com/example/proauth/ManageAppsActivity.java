@@ -60,19 +60,57 @@ public class ManageAppsActivity extends Activity {
 			SecurityLevel.HIGH.toString(), SecurityLevel.MEDIUM.toString(),
 			SecurityLevel.LOW.toString(), SecurityLevel.PUBLIC.toString(), };
 
-	static final HashSet<String> privatePerms = new HashSet<String>(Arrays.asList("android.permission.BROADCAST_SMS",
+	static final HashSet<String> privatePerms = new HashSet<String>(Arrays.asList(
+			"android.permission.BRICK",
+			"android.permission.BROADCAST_SMS",
+			"android.permission.SEND_SMS",
+			"android.permission.WRITE_SMS",
 			"android.permission.CALL_PHONE",
-			"android.permission.DELETE_PACKAGES",
-			"android.permission.READ_LOGS",
 			"android.permission.GET_TASKS",
-			"android.permission.SEND_SMS"));
+			"android.permission.INSTALL_PACKAGES",
+			"android.permission.DELETE_PACKAGES"));
 	
-	static final HashSet<String> mediumPerms = new HashSet<String>(Arrays.asList("android.permission.ACCESS_FINE_LOCATION",
-			 "android.permission.BLUETOOTH",
+	static final HashSet<String> highPerms = new HashSet<String>(Arrays.asList(
+			"android.permission.ACCESS_FINE_LOCATION",
+			"android.permission.BLUETOOTH_ADMIN",
 			"android.permission.CAMERA",
+			"android.permission.CHANGE_NETWORK_STATE",
+			"android.permission.CLEAR_APP_USER_DATA",
+			"android.permission.HARDWARE_TEST",
+			"android.permission.PROCESS_OUTGOING_CALLS",
+			"android.permission.WRITE_CALENDAR",
+			"android.permission.WRITE_CALL_LOG",
+			"android.permission.WRITE_CONTACTS",
+			"android.permission.WRITE_PROFILE",
+			"android.permission.WRITE_SOCIAL_STREAM",
+			"android.permission.WRITE_USER_DICTIONARY",
+			"android.permission.CHANGE_WIFI_STATE"));
+
+	static final HashSet<String> mediumPerms = new HashSet<String>(Arrays.asList(
+			"android.permission.ACCESS_WIFI_STATE",
+			"android.permission.ACCESS_COARSE_LOCATION",
+			"android.permission.ACCESS_NETWORK_STATE",
+			"android.permission.AUTHENTICATE_ACCOUNTS",
+			"android.permission.INTERNET",
+			"android.permission.KILL_BACKGROUND_PROCESSES",
 			"android.permission.MODIFY_PHONE_STATE",
-			 "android.permission.READ_CALENDAR",
-			"android.permission.READ_CONTACTS"));
+			"android.permission.READ_SMS",
+			"android.permission.READ_SOCIAL_STREAM",
+			"android.permission.READ_CALENDAR",
+			"android.permission.READ_CALL_LOG",
+			"android.permission.READ_CONTACTS",
+			"android.permission.READ_HISTORY_BOOKMARKS",
+			"android.permission.WRITE_EXTERNAL_STORAGE"));
+	
+
+	static final HashSet<String> lowPerms = new HashSet<String>(Arrays.asList(
+			"android.permission.BLUETOOTH",
+			"android.permission.DEVICE_POWER",
+			"android.permission.DISABLE_KEYGUARD",
+			"android.permission.RECEIVE_BOOT_COMPLETED",
+			"android.permission.RECEIVE_MMS",
+			"android.permission.RECEIVE_SMS",
+			"android.permission.WAKE_LOCK"));
 
 
 	@Override
@@ -134,9 +172,15 @@ public class ManageAppsActivity extends Activity {
 			    	Log.i(TAG, pkg_name + "... No requested permissions");
 			    } else {
 					for (int i = 0; i < requestedPermissions.length; i++) {
-					    if (mediumPerms.contains(requestedPermissions[i])){
+						if (lowPerms.contains(requestedPermissions[i])){
+					    	Log.d(TAG, "Default to Low because " + requestedPermissions[i]);
+					    	security_level = sp.getString(pkg_name, SecurityLevel.LOW.toString());
+					    } else if (mediumPerms.contains(requestedPermissions[i])){
 					    	Log.d(TAG, "Default to Medium because " + requestedPermissions[i]);
 					    	security_level = sp.getString(pkg_name, SecurityLevel.MEDIUM.toString());
+					    } else if (highPerms.contains(requestedPermissions[i])){
+					    	Log.d(TAG, "Default to High because " + requestedPermissions[i]);
+					    	security_level = sp.getString(pkg_name, SecurityLevel.HIGH.toString());
 					    } else if (privatePerms.contains(requestedPermissions[i])){
 					    	Log.d(TAG, "Default to Private because " + requestedPermissions[i]);
 					    	security_level = sp.getString(pkg_name, SecurityLevel.PRIVATE.toString());
