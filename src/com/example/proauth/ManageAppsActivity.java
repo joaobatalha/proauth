@@ -161,38 +161,39 @@ public class ManageAppsActivity extends Activity {
 			String security_level = sp.getString(pkg_name,
 					SecurityLevel.PUBLIC.toString());
 			
-			Log.i(TAG, "Getting permissions for " + pkg_name);
-			try {
-			    PackageInfo pkgInfo = getPackageManager().getPackageInfo(
-						    pkg_name, 
-						    PackageManager.GET_PERMISSIONS
-						  );
-			    String[] requestedPermissions = pkgInfo.requestedPermissions;
-			    if (requestedPermissions == null) {
-			    	Log.i(TAG, pkg_name + "... No requested permissions");
-			    } else {
-					for (int i = 0; i < requestedPermissions.length; i++) {
-						if (lowPerms.contains(requestedPermissions[i])){
-					    	Log.d(TAG, "Default to Low because " + requestedPermissions[i]);
-					    	security_level = sp.getString(pkg_name, SecurityLevel.LOW.toString());
-					    } else if (mediumPerms.contains(requestedPermissions[i])){
-					    	Log.d(TAG, "Default to Medium because " + requestedPermissions[i]);
-					    	security_level = sp.getString(pkg_name, SecurityLevel.MEDIUM.toString());
-					    } else if (highPerms.contains(requestedPermissions[i])){
-					    	Log.d(TAG, "Default to High because " + requestedPermissions[i]);
-					    	security_level = sp.getString(pkg_name, SecurityLevel.HIGH.toString());
-					    } else if (privatePerms.contains(requestedPermissions[i])){
-					    	Log.d(TAG, "Default to Private because " + requestedPermissions[i]);
-					    	security_level = sp.getString(pkg_name, SecurityLevel.PRIVATE.toString());
-					    	break;
-					    }
-					}
-			    }
+			if (sp.getString(pkg_name, "none").equals("none")){
+				Log.i(TAG, "Getting permissions for " + pkg_name);
+				try {
+				    PackageInfo pkgInfo = getPackageManager().getPackageInfo(
+							    pkg_name, 
+							    PackageManager.GET_PERMISSIONS
+							  );
+				    String[] requestedPermissions = pkgInfo.requestedPermissions;
+				    if (requestedPermissions == null) {
+				    	Log.i(TAG, pkg_name + "... No requested permissions");
+				    } else {
+						for (int i = 0; i < requestedPermissions.length; i++) {
+							if (lowPerms.contains(requestedPermissions[i])){
+						    	Log.d(TAG, "Default to Low because " + requestedPermissions[i]);
+						    	security_level = SecurityLevel.LOW.toString();
+						    } else if (mediumPerms.contains(requestedPermissions[i])){
+						    	Log.d(TAG, "Default to Medium because " + requestedPermissions[i]);
+						    	security_level = SecurityLevel.MEDIUM.toString();
+						    } else if (highPerms.contains(requestedPermissions[i])){
+						    	Log.d(TAG, "Default to High because " + requestedPermissions[i]);
+						    	security_level = SecurityLevel.HIGH.toString();
+						    } else if (privatePerms.contains(requestedPermissions[i])){
+						    	Log.d(TAG, "Default to Private because " + requestedPermissions[i]);
+						    	security_level = SecurityLevel.PRIVATE.toString();
+						    	break;
+						    }
+						}
+				    }
+				}
+				catch (PackageManager.NameNotFoundException e) {
+					Log.d(TAG, "Failed to get request perms");
+				}
 			}
-			catch (PackageManager.NameNotFoundException e) {
-				Log.d(TAG, "Failed to get request perms");
-			}
-			
 			
 			// Add to the Manage Apps Display
 			if (pkg_name.equals("com.android.phone") || pkg_name.equals("com.example.proauth")){	
@@ -205,7 +206,6 @@ public class ManageAppsActivity extends Activity {
 				app_icons.add(app_icon);
 				//Log.w(TAG, "Showing:" + rInfo.activityInfo.applicationInfo.packageName);
 				ass.add(new AppSecurity(app_name, pkg_name, security_level, app_icon));
-
 			}
 			e.putString(pkg_name, security_level);
 		}

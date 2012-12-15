@@ -11,8 +11,6 @@
     <string name="title_manage_apps">Manage Your Apps</string>
     
     
-    <string name="title_activity_faq">FAQActivity</string>
-    <string name="faq_contents">Welcome to our FAQ page!\n</string>
     
     <string name="dummy">UncreativeDummyString</string>
     
@@ -40,5 +38,48 @@
     <string name="get_log_command">logcat ActivityManager:I *:S</string>
     <string name="clear_log_command">logcat -c</string>
     
+    
+    <string name="title_activity_faq">FAQActivity</string>
+    <string name="faq_contents">Welcome to ProAuth and our FAQ and Tutorial! \n
+
+Tutorial \n
+1. Go to Manage Your Apps. The default password is "1234." \n
+Here, the security levels of each of your apps are \n
+listed, and you can choose what security settings you want. Putting an app at \n
+security level MEDIUM, for example, lets you access that app while your phone \n
+is still with you. \n
+ \n
+2. Go to ProAuth Settings. Here, some recommended settings are chosen for you. \n
+You can change your password here, as well as enable or disable the triggers \n
+that proauth uses to determine phone state. \n
+Change the list of triggers until you are satisfied with how ProAuth will work, \n
+and then start your service by checking "Start Monitoring Service." \n
+ProAuth is now up and running! \n
+ \n
+FAQ \n
+Q: What is ProAuth? \n
+A: ProAuth is short for progressive authentication. This app lets you type in  \n
+your password less often than the stock lock screens because it makes your phone \n
+aware of how safe it is, as well as how dangerous your apps are. \n
+For example, under the default settings, your phone will never ask you for  \n
+your password if you are still holding on to it, and it will automatically  \n
+lock itself again when you have left it on a table for a while. \n
+ \n
+Q: What do the security states mean? \n
+A: The security states represent two things: \n
+	1. For the full system, it represents how safe your phone feels \n
+		When you log in at any lock screen, your phone state will be \n
+		jumped to PRIVATE. When you leave your phone alone for a while, \n
+		it will drop security levels until it hits PUBLIC. \n
+	2. For each app, it represents how dangerous it is. \n
+		PRIVATE apps are only available when the phone is in state \n
+		PRIVATE, and on the other extreme, PUBLIC apps are always \n
+		available. \n
+ \n
+After 30 seconds, it will lock all the apps categorized as PRIVATE, then after \n
+another 30 seconds, it will also lock all the apps categorized as HIGH.  \n
+
+        
+    </string>
     
 </resources>

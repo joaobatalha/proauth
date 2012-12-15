@@ -85,9 +85,9 @@ public class BlockActivityHandler {
 						handler.removeCallbacks(timeoutTable.get(packagename));
 					}
 					Runnable runnable = new timeoutCallback(packagename);
-					timeoutTable.put(packagename, runnable);
 					//Timeout is set to 1 minute
 					handler.postDelayed(runnable, 1 * 1000 * 60);
+					timeoutTable.put(packagename, runnable);
 				}
 			}
 		}, new IntentFilter(LockScreenActivity.PASSED));
