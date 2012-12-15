@@ -38,6 +38,9 @@ public class MonitorService extends Service {
     
     @Override
     public void onCreate() {
+    	
+    	/*Need to make it a foreground service so that it does not get killed
+    	 by the activity manager */
         mNM = (NotificationManager)getSystemService(NOTIFICATION_SERVICE);
         try {
             mStartForeground = getClass().getMethod("startForeground",
@@ -51,7 +54,7 @@ public class MonitorService extends Service {
         
         mContext = this;
 
-		//set button
+		//When the service first starts the phone state should be public
 		SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
 		Editor e = sp.edit();
 		e.putBoolean("monitor_on", true);
@@ -62,10 +65,10 @@ public class MonitorService extends Service {
         	init = 1;
         	get_log_command = getResources().getString(R.string.get_log_command);
     		clear_log_command = getResources().getString(R.string.clear_log_command);
+    		//Regex used to get app name, and activity name from the logs
     		String regex_pattern = getResources().getString(R.string.activity_name_pattern);
-    		//String regex_pattern = getResources().getString(R.string.intent_name_pattern);
     		ActivityPattern = Pattern.compile(regex_pattern,Pattern.CASE_INSENSITIVE);
-    		Log.d("Detector Service: ", "Initialized detector with pattern: " + regex_pattern);        
+    		Log.i(TAG, "Initialized monitor service with regex pattern: " + regex_pattern);        
         }	
     }
 
@@ -82,10 +85,10 @@ public class MonitorService extends Service {
                 mStartForeground.invoke(this, mStartForegroundArgs);
             } catch (InvocationTargetException e) {
                 // Should not happen.
-                Log.w("MyApp", "Unable to invoke startForeground", e);
+                Log.w("ProAuth", "Unable to invoke startForeground", e);
             } catch (IllegalAccessException e) {
                 // Should not happen.
-                Log.w("MyApp", "Unable to invoke startForeground", e);
+                Log.w("ProAuth", "Unable to invoke startForeground", e);
             }
             return;
         }
@@ -107,10 +110,10 @@ public class MonitorService extends Service {
                 mStopForeground.invoke(this, mStopForegroundArgs);
             } catch (InvocationTargetException e) {
                 // Should not happen.
-                Log.w("MyApp", "Unable to invoke stopForeground", e);
+                Log.w("ProAuth", "Unable to invoke stopForeground", e);
             } catch (IllegalAccessException e) {
                 // Should not happen.
-                Log.w("MyApp", "Unable to invoke stopForeground", e);
+                Log.w("ProAuth", "Unable to invoke stopForeground", e);
             }
             return;
         }
@@ -119,8 +122,8 @@ public class MonitorService extends Service {
         //setForeground(false);
     }
 
+    
    
-	
    public class LocalBinder extends Binder {
         MonitorService getService() {
             return MonitorService.this;
@@ -130,20 +133,24 @@ public class MonitorService extends Service {
 	
     @Override
 	public IBinder onBind(Intent intent) {
-    	Log.d("JOAO", "SOMEONE BINDED TO ME");
 		return mBinder;
+	}
+    
+	//This method is called when the user presses the System Timeout box
+	public void registerHandlerScreenListeners(){
+		if(blocking_handler != null){
+			blocking_handler.registerScreenListeners();
+		}
 	}
 	
 	
-
 	private static Thread log_monitor_thread;
 	private static String get_log_command;
 	private static String clear_log_command;
 	private static Pattern ActivityPattern;
-	private static int init;
 	private BlockActivityHandler blocking_handler;
+	private static int init;
 	
-	//Code to execute when service is started 
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId){
 		if(log_monitor_thread != null){
@@ -153,22 +160,20 @@ public class MonitorService extends Service {
 		CharSequence text = getText(R.string.service_running);
 		Notification note = new Notification(0,text,System.currentTimeMillis());
 		startForegroundCompat(R.string.service_running, note);
+		
+		//Initialize the thread that actually monitors the log
 		log_monitor_thread = new LogMonitoringThread(new BlockActivityHandler(this));
 		log_monitor_thread.start();
 		return Service.START_STICKY;
 	}
 	
-	public void registerHandlerScreenListeners(){
-		if(blocking_handler != null){
-			blocking_handler.registerScreenListeners();
-		}
-		
-	}
 	
+	/* Thread executes the logcat ActivityManager:I *:S which reads through the logs
+	 * of the system and uses a regex to find intents starting applications, and extract
+	 * the name of the app that the activity manager is trying to start. */
 	private class LogMonitoringThread extends Thread{
 
     	BufferedReader br;
-//    	BlockActivityHandler blocking_handler;
     	SharedPreferences mPrefs;
     	SharedPreferences mAppPrefs;
     	public LogMonitoringThread(BlockActivityHandler handler){
@@ -188,7 +193,7 @@ public class MonitorService extends Service {
 			boolean system_timeout = mPrefs.getBoolean("trigger_1", false);
 			
 			if(system_timeout){
-				Log.d(TAG, "APP TO PHONE:" + appSecurityLevel + " " + phoneSecurityLevel);
+				Log.i(TAG, "App security level: " + appSecurityLevel + ", Phone Security Level: " + phoneSecurityLevel);
 				if (appSecurityLevel.value > phoneSecurityLevel.value){
 					return true;
 				}
@@ -218,7 +223,7 @@ public class MonitorService extends Service {
     	
 		@Override
 		public void run() {
-			Log.d("JOAO", "Starting Monitoring Thread");	
+			Log.i(TAG, "Starting log monitoring thread thread...");	
 			try {
 	    		Process process;
 	    		process = Runtime.getRuntime().exec(clear_log_command);
@@ -227,36 +232,27 @@ public class MonitorService extends Service {
 				String line;
 
 				while(( (line=br.readLine()) != null) && !this.isInterrupted()){					
-					//if (line.contains("cat=[" + Intent.CATEGORY_HOME + "]")){
-					if (line.contains("cat=[" + Intent.CATEGORY_HOME + "]")){
-						Log.d("JOAO", "Cat match");	
+					if (line.contains("cat=[" + Intent.CATEGORY_HOME + "]")){	
 						continue;
 					} 
 					
 					Matcher m = ActivityPattern.matcher(line);
 					
 					if (!m.find()){
-						Log.d("JOAO", "No match");	
 						continue;
 					}
 					
 					if (m.groupCount()<2){
-						Log.d("Detector Service: ", "Error while matching a line of the log.");
+						Log.i(TAG, "Error while matching a line of the log.");
 						continue;
 					}
 					
-					
-					
-
-					
-					Log.d("JOAO", "Line matched in the log: " + line);	
-						Log.i("JOAO", "Found activity launching: " + m.group(1) + "  /   " + m.group(2));
+						
+						Log.i(TAG, "Detected app launch => app_name: " + m.group(1) + "  / activity_name: " + m.group(2));
 						if (!requiresBlocking(m.group(1))){
-							Log.d("JOAO", "DID not require blocking");
 							continue;
 						}
 						if(blocking_handler != null){
-							Log.d(TAG, "no blocking handler..");
 							blocking_handler.onActivityStarting(m.group(1), m.group(2));
 						}
 
@@ -273,7 +269,7 @@ public class MonitorService extends Service {
 		log_monitor_thread = null;
 		blocking_handler = null;
 		
-		//unset button
+		//Service was killed, uncheck the box in preferences
 		SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
 		Editor e = sp.edit();
 		e.putBoolean("monitor_on", false);
