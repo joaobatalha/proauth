@@ -18,7 +18,7 @@
     
     <string name="title_lockscreen">Lock Screen</string>
     <string name="no_description"></string>
-    <string name="app_is_locked"><b>This application is locked by ProAuth.</b>\n Enter your password.</string>
+    <string name="app_is_locked"><b>This application is locked by ProAuth. (Default pass: 1234)</b>\n Enter your password.</string>
     <string name="preferences">Preferences</string>
     <string name="security_settings">Security Settings</string>
     <string name="enter_password">Enter Password</string>

@@ -206,9 +206,7 @@ public class MonitorService extends Service {
 				else{
 					return false;
 				}
-			}
-
-				
+			}		
 			
     	}
     	
@@ -217,8 +215,7 @@ public class MonitorService extends Service {
     		if(blocking_handler != null){
     			blocking_handler.onDestroy();
     		}
-    		super.interrupt();
-    		
+    		super.interrupt();  		
     	}
     	
 		@Override
