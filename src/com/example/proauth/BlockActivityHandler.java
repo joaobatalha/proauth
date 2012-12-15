@@ -210,31 +210,17 @@ public class BlockActivityHandler {
 	
 	private boolean dropPhoneSecurityLevel(){
 		SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(current_context);
-	    boolean high = false;
-
-	    boolean medium = sp.getBoolean("trigger_1", false);
-	    boolean low = sp.getBoolean("trigger_3", false);
 	    
 		String prev_level = sp.getString(MainActivity.PHONE_SECURITY_STATE, SecurityLevel.PUBLIC.toString());
 		String lower_level = SecurityLevel.PUBLIC.toString();
 		if (prev_level.equals(SecurityLevel.PRIVATE.toString())){
-			if (high){
-				lower_level = SecurityLevel.HIGH.toString();
-			} else if (medium){
-				lower_level = SecurityLevel.MEDIUM.toString();
-			} else if (low) {
-				lower_level = SecurityLevel.LOW.toString();
-			}
+			lower_level = SecurityLevel.HIGH.toString();
 		} else if (prev_level.equals(SecurityLevel.HIGH.toString())){
-			if (medium){
-				lower_level = SecurityLevel.MEDIUM.toString();
-			} else if (low) {
-				lower_level = SecurityLevel.LOW.toString();
-			}
+			lower_level = SecurityLevel.MEDIUM.toString();
 		} else if (prev_level.equals(SecurityLevel.MEDIUM.toString())){
-			if (low) {
-				lower_level = SecurityLevel.LOW.toString();
-			}
+			lower_level = SecurityLevel.LOW.toString();
+		} else if (prev_level.equals(SecurityLevel.LOW.toString())){
+			lower_level = SecurityLevel.PUBLIC.toString();
 		}
 		
 		if (isSafeLoc && (prev_level.equals(SecurityLevel.PRIVATE.toString()) || prev_level.equals(SecurityLevel.HIGH.toString()) ||
@@ -252,7 +238,7 @@ public class BlockActivityHandler {
 		e.commit();
 		
 		Log.d(TAG, "DROPPED! Current phone state:" + sp.getString(MainActivity.PHONE_SECURITY_STATE, SecurityLevel.PUBLIC.toString()));
-		if (lower_level.equals(SecurityLevel.PUBLIC)){
+		if (lower_level.equals(SecurityLevel.PUBLIC.toString())){
 			return false;
 		}
 		return true;
