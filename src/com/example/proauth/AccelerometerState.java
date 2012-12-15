@@ -14,6 +14,9 @@ public class AccelerometerState implements SensorEventListener {
 	private int numEvents;
 	private boolean isMoving = false;
 	private BlockActivityHandler bahandler;
+	public static final String TURN_ON_OFF_ACCEL = "com.example.proauth.TURN_ON_OFF_ACCEL";
+	public static final String ON_OR_OFF_ACCEL = "com.example.proauth.ON_OFF_ACCEL";
+	public static final String TAG = "AccelerometerState";
 	
 	public AccelerometerState(BlockActivityHandler bah, Context context) {
 		SensorManager sensorManager = (SensorManager)context.getSystemService(Context.SENSOR_SERVICE);

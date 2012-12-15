@@ -8,6 +8,7 @@ import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.os.IBinder;
 import android.preference.CheckBoxPreference;
 import android.preference.Preference;
@@ -15,6 +16,7 @@ import android.preference.Preference.OnPreferenceClickListener;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceManager;
 import android.util.Log;
+import android.widget.Toast;
 
 
 public class SetPreferencesActivity extends PreferenceActivity {
@@ -22,7 +24,11 @@ public class SetPreferencesActivity extends PreferenceActivity {
 	CheckBoxPreference monitor;
 	CheckBoxPreference app_timeout;
 	CheckBoxPreference system_timeout;
+	CheckBoxPreference gps_setting;
+	CheckBoxPreference accelerometer_setting;
+	Preference gps_set_location;
 	Editor e;
+	SharedPreferences sp;
 	public static String TAG = "SetPreferencesActivity";
 	
 	@Override
@@ -32,8 +38,8 @@ public class SetPreferencesActivity extends PreferenceActivity {
 		doBindService();//Binds to the monitor service
         
         addPreferencesFromResource(R.xml.preferences);
-        
-		SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
+
+		sp = PreferenceManager.getDefaultSharedPreferences(this);
 		e = sp.edit();
         PreferenceManager preferenceManager = getPreferenceManager();
         
@@ -62,7 +68,10 @@ public class SetPreferencesActivity extends PreferenceActivity {
         
 
         app_timeout = (CheckBoxPreference) preferenceManager.findPreference("trigger_0"); 
-        system_timeout = (CheckBoxPreference) preferenceManager.findPreference("trigger_1"); 
+        system_timeout = (CheckBoxPreference) preferenceManager.findPreference("trigger_1");
+        gps_setting = (CheckBoxPreference) preferenceManager.findPreference("trigger_3");
+        gps_set_location = preferenceManager.findPreference("gps_set_location");
+        accelerometer_setting = (CheckBoxPreference) preferenceManager.findPreference("trigger_2");
         
         
         app_timeout.setEnabled(app_timeout.isChecked());
@@ -75,6 +84,52 @@ public class SetPreferencesActivity extends PreferenceActivity {
         	system_timeout.setChecked(false);
         }
         
+        gps_set_location.setEnabled(gps_setting.isChecked());
+        
+        gps_setting.setOnPreferenceClickListener(new OnPreferenceClickListener(){
+
+			@Override
+			public boolean onPreferenceClick(Preference arg0) {
+				gps_set_location.setEnabled(gps_setting.isChecked());
+				Intent intent = new Intent(TrustedLocationState.TURN_ON_OFF_LOC);
+				intent.putExtra(TrustedLocationState.ON_OR_OFF, gps_setting.isChecked());
+		    	sendBroadcast(intent);
+				return true;
+			}
+        	
+        });
+        
+        accelerometer_setting.setOnPreferenceClickListener(new OnPreferenceClickListener(){
+			@Override
+			public boolean onPreferenceClick(Preference arg0) {
+				Log.d(TAG, "clicked accelerometer button!");
+				Intent intent = new Intent(AccelerometerState.TURN_ON_OFF_ACCEL);
+				intent.putExtra(AccelerometerState.ON_OR_OFF_ACCEL, accelerometer_setting.isChecked());
+		    	sendBroadcast(intent);
+				return true;
+			}
+        	
+        });
+        
+        gps_set_location.setOnPreferenceClickListener(new OnPreferenceClickListener() {
+
+			@Override
+			public boolean onPreferenceClick(Preference preference) {
+				if (SystemClock.elapsedRealtime() - 
+						sp.getLong(TrustedLocationState.RECENT_GPS_UPDATE_TIME,
+								-TrustedLocationState.UPDATE_THRESHOLD) >= TrustedLocationState.UPDATE_THRESHOLD) {
+					Toast toast = Toast.makeText(getApplicationContext(), "Location hasn't been updated recently, so no change was made",
+							Toast.LENGTH_SHORT);
+					toast.show();
+				} else {
+					e.putString(TrustedLocationState.TRUSTED_LATITUDE, sp.getString(TrustedLocationState.CURRENT_LATITUDE, null));
+					Toast toast = Toast.makeText(getApplicationContext(), "Safe location is being changed", Toast.LENGTH_SHORT);
+					toast.show();
+				}
+				return true;
+			}
+        	
+        });
         
         app_timeout.setOnPreferenceClickListener(new OnPreferenceClickListener(){
 			@Override
