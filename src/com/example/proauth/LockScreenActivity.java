@@ -12,7 +12,6 @@ import android.graphics.PixelFormat;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.Window;
@@ -69,7 +68,6 @@ public class LockScreenActivity extends Activity {
 		                        event.getAction() == KeyEvent.ACTION_DOWN &&
 		                        event.getKeyCode() == KeyEvent.KEYCODE_ENTER) {
 		                	boolean passed = checkPassword(PasswordEnter.getText().toString());
-		                	Log.d(TAG, "Password was correct:" + passed);
 		                	if (passed){
 		                		youShallPass();
 		                	} else {
@@ -91,11 +89,10 @@ public class LockScreenActivity extends Activity {
 		super.onResume();
 
 		app_name = this.getIntent().getStringExtra(BlockedPackageName);
-		// toggleShowWarning();
 		
 		if(app_name.equals("proauth_settings") || app_name.equals("proauth_app_settings")){	//special case the settings
 			WhichAppTextView.setText("to change proAuth settings.");
-		} else {									//normal app case
+		} else {//normal app case
 			final PackageManager pm = getApplicationContext().getPackageManager();
 			ApplicationInfo ai;
 			try {
@@ -105,7 +102,6 @@ public class LockScreenActivity extends Activity {
 			}
 			final String applicationName = (ai != null ? ai.loadLabel(pm)
 					.toString() : "(unknown)");
-			Log.d(TAG, "App that summoned me: " + applicationName);
 			
 			WhichAppTextView.setText("to unlock " + applicationName + ".");
 	
@@ -117,23 +113,17 @@ public class LockScreenActivity extends Activity {
 		}
 	}
 
+	//
 	@Override
 	public void onPause() {
 		super.onPause();
 		finish();
-		// unregisterReceiver(LockState);
-	}
-
-	public void toggleLockScreenState() {
 	}
 
 	public boolean checkPassword(String password) {
-		Log.d(TAG, "Checking password...");
     	SharedPreferences mySharedPreferences = PreferenceManager
 				.getDefaultSharedPreferences(this);
-
 		String real_password = mySharedPreferences.getString("proauth_password", "1234");
-		//Log.d(TAG, "real password: " + real_password);
     	if (real_password.equals(password)){
     		return true;
     	} else {
@@ -141,9 +131,9 @@ public class LockScreenActivity extends Activity {
     	}
 	}
 
-	public void showSecuritySettingsActivity() {
-	}
-
+	//We need to change the back button behaviour
+	//otherwise it would take us the the app that we are trying
+	//to block
 	@Override
 	public void onBackPressed() {
 		// Now directs the user to the home screen
@@ -156,47 +146,32 @@ public class LockScreenActivity extends Activity {
     	finish();
 	}
 
-	private void toggleShowWarning() {
-		final SharedPreferences preferences = PreferenceManager
-				.getDefaultSharedPreferences(this);
-		boolean hideNotification = false;
-		if (hideNotification) {
-			WarningTextView.setVisibility(View.VISIBLE);
-		} else {
-			WarningTextView.setVisibility(View.GONE);
-		}
-	}
 	
+	//Right password
 	private void youShallPass(){
-		if(app_name.equals("proauth_settings")){	//special case the settings
+		if(app_name.equals("proauth_settings")){	//special case the ProAuth settings 
 			Intent intent = new Intent();
 			intent.setClass(this, SetPreferencesActivity.class);
 			startActivityForResult(intent, 0);
-		} else if(app_name.equals("proauth_app_settings")){	//special case the settings
+		} else if(app_name.equals("proauth_app_settings")){	//special case for the activity that sets the security level of each app
 			Intent intent = new Intent();
 			intent.setClass(this, ManageAppsActivity.class);
 			startActivityForResult(intent, 0);
-		} else {									//normal app case
-			Log.d(TAG, "You can go to your app. yay! Except I don't know how, until we merge with Joao.");
+		} else {//Every other app
 			this.sendBroadcast(
 					new Intent()
 						.setAction(PASSED)
 						.putExtra(PACKAGE_NAME, getIntent().getStringExtra(BlockedPackageName))
 						.putExtra(ACTIVITY_NAME, getIntent().getStringExtra(BlockedActivityName)));
-			
 			finish();
-			/*
-			Intent intent = new Intent(app_name);
-			startActivity(intent);
-			*/
 		}
 	}
 
+	//Wrong password
 	private void youShallNotPass(){
-		String wrong_text = "That wasn't the right password. Use your proauth password.";
+		String wrong_text = "That wasn't the right password. Use your ProAuth password.";
 		Toast wrongPassword = Toast.makeText(mContext, wrong_text, Toast.LENGTH_LONG);
 		wrongPassword.show();
-
 		this.sendBroadcast(
 				new Intent()
 					.setAction(NOT_PASSED)
@@ -208,8 +183,7 @@ public class LockScreenActivity extends Activity {
     		.addCategory(Intent.CATEGORY_HOME)
     		.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
     	startActivity(intent);
-    	finish();
-		
+    	finish();	
 	}
 	
 	  @Override 
@@ -217,46 +191,6 @@ public class LockScreenActivity extends Activity {
 	    { 
 	        super.onConfigurationChanged(newConfig);
 	    }
-	
-	@Override
-	public void onStop(){
-		//TODO Second chance?
-		super.onStop();
-		/*
-		Intent intent = new Intent();
-		intent
-			.setAction(Intent.ACTION_MAIN)
-			.addCategory(Intent.CATEGORY_HOME)
-			.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-		startActivity(intent);
-		*/
-	}
-	
-	
-	/*
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		getMenuInflater().inflate(R.menu.actionbar_main, menu);
-		return super.onCreateOptionsMenu(menu);
-	}
 
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-		switch (item.getItemId()) {
-
-		case R.id.MenuItemPreferences: {
-			checkPassword();
-		}
-			break;
-		case R.id.MenuItemSecuritySettings: {
-			showSecuritySettingsActivity();
-		}
-			break;
-		default:
-			return super.onOptionsItemSelected(item);
-		}
-
-		return true;
-	}
-	*/
+	
 }

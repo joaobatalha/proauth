@@ -77,7 +77,6 @@ public class ManageAppsActivity extends Activity {
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-		//Log.d(TAG, "OnCreate");
 		super.onCreate(savedInstanceState);
 		mContext = this.getApplicationContext();
 		
@@ -124,7 +123,7 @@ public class ManageAppsActivity extends Activity {
 			String security_level = sp.getString(pkg_name,
 					SecurityLevel.PUBLIC.toString());
 			
-			Log.d(TAG, "Getting permissions for " + pkg_name);
+			Log.i(TAG, "Getting permissions for " + pkg_name);
 			try {
 			    PackageInfo pkgInfo = getPackageManager().getPackageInfo(
 						    pkg_name, 
@@ -132,7 +131,7 @@ public class ManageAppsActivity extends Activity {
 						  );
 			    String[] requestedPermissions = pkgInfo.requestedPermissions;
 			    if (requestedPermissions == null) {
-			    	Log.d(TAG, pkg_name + "... No requested permissions");
+			    	Log.i(TAG, pkg_name + "... No requested permissions");
 			    } else {
 					for (int i = 0; i < requestedPermissions.length; i++) {
 					    if (mediumPerms.contains(requestedPermissions[i])){
@@ -143,7 +142,6 @@ public class ManageAppsActivity extends Activity {
 					    	security_level = sp.getString(pkg_name, SecurityLevel.PRIVATE.toString());
 					    	break;
 					    }
-						//Log.d(TAG, requestedPermissions[i]);
 					}
 			    }
 			}
@@ -255,19 +253,11 @@ public class ManageAppsActivity extends Activity {
 		 * Because it's only ONE option in the menu. In order to make it simple,
 		 * We always start SetPreferenceActivity without checking.
 		 */
-		/*
-		 * Intent intent = new Intent();
-		 * intent.setClass(ManageAppsActivity.this,
-		 * SetPreferencesActivity.class); startActivityForResult(intent, 0);
-		 */
 		return true;
 	}
 
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-		// TODO Auto-generated method stub
-		// super.onActivityResult(requestCode, resultCode, data);
-
 		/*
 		 * To make it simple, always re-load Preference setting.
 		 */
@@ -276,7 +266,6 @@ public class ManageAppsActivity extends Activity {
 	}
 
 	private void refreshApps() {
-		Log.d(TAG, "Refresh");
 		ArrayList<AppSecurity> ass = new ArrayList<AppSecurity>();
 		for (int i = 0; i < values.length; i++) {
 			String security_level = sp.getString(id_array[i],
@@ -309,14 +298,6 @@ public class ManageAppsActivity extends Activity {
 		}
 	}
 	
-
-	/*
-	@Override
-	public void onBackPressed() {
-		Intent intent = new Intent(this, MainActivity.class);
-		startActivity(intent);
-	}
-	*/
 
 	public class AppSecurityArrayAdapter extends ArrayAdapter<AppSecurity> {
 		private ArrayList<AppSecurity> apps;

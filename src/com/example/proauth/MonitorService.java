@@ -199,7 +199,6 @@ public class MonitorService extends Service {
 				}
 				return false;
 			}else{//system timeout is not turned on
-				Log.d("JOAO", "App security level: " + appSecurityLevel);
 				if((appSecurityLevel.toString()).equals(SecurityLevel.PRIVATE.toString())){
 					return true;
 				}
@@ -220,7 +219,7 @@ public class MonitorService extends Service {
     	
 		@Override
 		public void run() {
-			Log.i(TAG, "Starting log monitoring thread thread...");	
+			Log.i(TAG, "Starting log monitoring thread...");	
 			try {
 	    		Process process;
 	    		process = Runtime.getRuntime().exec(clear_log_command);

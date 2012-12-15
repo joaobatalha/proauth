@@ -23,30 +23,18 @@ import android.widget.ListView;
 
 public class MainActivity extends Activity {
 
-	// CheckBox prefCheckBox;
 	ListView prefList;
 	String TAG = "MainActivity";
 	public static String PHONE_SECURITY_STATE = "com.example.proauth.phone_security_state";
 	String[] values = new String[] {"ProAuth Settings", "Manage Your Apps", 
 			"FAQ & Tutorial"};
 
-	FileOutputStream log_file;
-	public static String LOG_FILE = "proauth_log.txt";
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 		registerFinishReceiver();
-
-		Log.e(TAG, this.getApplicationContext().getFilesDir().toString());
-		try {
-			log_file = this.getApplicationContext().openFileOutput(LOG_FILE, 0);
-
-		} catch (FileNotFoundException e2) {
-			e2.printStackTrace();
-		}
-		
 		loadPref();
 
 		// For the ListView
@@ -60,7 +48,6 @@ public class MainActivity extends Activity {
 					int myItemInt, long mylng) {
 				String selectedFromList = (String) (prefList
 						.getItemAtPosition(myItemInt));
-				Log.d(TAG, selectedFromList);
 				if (selectedFromList.equals(values[0])) {
 					Intent intent = new Intent();
 					intent.setClass(MainActivity.this, LockScreenActivity.class);
@@ -71,15 +58,9 @@ public class MainActivity extends Activity {
 					intent.putExtra(LockScreenActivity.BlockedPackageName, "proauth_app_settings");
 					startActivity(intent);
 				} else if (selectedFromList.equals(values[2])) {
-					Intent intent = new Intent(
-							"com.example.proauth.FAQActivity");
+					Intent intent = new Intent("com.example.proauth.FAQActivity");
 					startActivity(intent);
-				} /*else if (selectedFromList.equals(values[3])) {
-
-			    	Intent intent = new Intent();
-			    	intent.setClass(MainActivity.this, MonitorService.class);
-			    	startService(intent);
-				} */
+				} 
 			}
 		};
 		prefList.setOnItemClickListener(listener);
@@ -88,7 +69,6 @@ public class MainActivity extends Activity {
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
-		//getMenuInflater().inflate(R.menu.activity_main, menu);
 		return true;
 	}
 
@@ -110,9 +90,6 @@ public class MainActivity extends Activity {
 
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-		// TODO Auto-generated method stub
-		// super.onActivityResult(requestCode, resultCode, data);
-
 		/*
 		 * To make it simple, always re-load Preference setting.
 		 */
@@ -129,11 +106,10 @@ public class MainActivity extends Activity {
 		e.putString(PHONE_SECURITY_STATE, state);
 		e.commit();
 
-		Log.d(TAG, "Current phone state:" + state);
+		Log.i(TAG, "Current phone state:" + state);
 
 		boolean monitor_on = sp.getBoolean(
 				"monitor_on", false);
-		Log.d(TAG, "Monitor should be on:" + monitor_on);
 	}
 	
 	private void registerFinishReceiver(){
@@ -143,8 +119,7 @@ public class MainActivity extends Activity {
 	
     BroadcastReceiver finishedReceiver = new BroadcastReceiver(){ 
         public void onReceive(Context context, Intent intent){ 
-        	Log.d("JOAO", "Finishing Main");
-        MainActivity.this.finish();   
+        	MainActivity.this.finish();   
         } 
     }; 
     
