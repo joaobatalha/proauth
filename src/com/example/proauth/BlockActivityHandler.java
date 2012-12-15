@@ -30,15 +30,19 @@ public class BlockActivityHandler {
 	private BroadcastReceiver not_passed;
 	private BroadcastReceiver screen_off;
 	private BroadcastReceiver screen_on;
+	private BroadcastReceiver turn_on_off_location, turn_on_off_accel;
 	public static String TAG = "BlockActivityHandler";
 	public int INTERVAL = 1 * 1000 * 5;		// 5 seconds
 	private AccelerometerState accelerometerState;
-	private boolean isScreenOn, isAccelMoving, isActive;
+	private TrustedLocationState trustedLocationState;
+	private boolean isScreenOn, isAccelMoving, isActive, isSafeLoc, isAccelerometerOn;
 
 	private SharedPreferences sp;
 	
 	public BlockActivityHandler(Context context) {
 		accelerometerState = new AccelerometerState(this, context);
+		trustedLocationState = new TrustedLocationState(this, context);
+		isSafeLoc = false;
 		isActive = true;
 		isScreenOn = true;
 		current_context = context;
@@ -50,6 +54,12 @@ public class BlockActivityHandler {
 		Log.d("JOAO", "About to register the receivers");
 		sp = PreferenceManager.getDefaultSharedPreferences(current_context);
 		INTERVAL = Integer.parseInt(sp.getString("timeout_duration", "5000"));
+		
+		if (sp.getBoolean("trigger_3", false)) {
+			trustedLocationState.turnOn();
+		}
+		
+		isAccelerometerOn = sp.getBoolean("trigger_2", false);
 			
 		
 		context.registerReceiver(passed = new BroadcastReceiver(){
@@ -103,6 +113,35 @@ public class BlockActivityHandler {
 			}
 		}, new IntentFilter(LockScreenActivity.NOT_PASSED));
 		
+		context.registerReceiver(turn_on_off_location = new BroadcastReceiver(){
+
+			@Override
+			public void onReceive(Context arg0, Intent intent) {
+				Log.d(TAG, "Got the message to turn on/off the TrustedLocationState");
+				boolean shouldTurnOn = intent.getBooleanExtra(TrustedLocationState.ON_OR_OFF, false);
+				if (shouldTurnOn) {
+					trustedLocationState.turnOn();
+				} else {
+					trustedLocationState.turnOff();
+				}
+			}
+			
+		}, new IntentFilter(TrustedLocationState.TURN_ON_OFF_LOC));
+		
+		context.registerReceiver(turn_on_off_accel = new BroadcastReceiver(){
+
+			@Override
+			public void onReceive(Context arg0, Intent intent) {
+				Log.d(TAG, "Got the message to turn on/off the AccelerometerState");
+				boolean shouldTurnOn = intent.getBooleanExtra(AccelerometerState.ON_OR_OFF_ACCEL, false);
+				if (shouldTurnOn) {
+					isAccelerometerOn = true;
+				} else {
+					isAccelerometerOn = false;
+				}
+			}
+			
+		}, new IntentFilter(AccelerometerState.TURN_ON_OFF_ACCEL));
 
 		 //Don't do timeout dropping if disabled
 		if (sp.getBoolean("trigger_1", false)){     
@@ -142,7 +181,7 @@ public class BlockActivityHandler {
 	
 	
 	private void handleScreenAndAccel(boolean isScreenOn, boolean isAccelMoving) {
-		if (isScreenOn && isAccelMoving) {
+		if (isScreenOn && (!isAccelerometerOn || isAccelMoving)) {
 			if (!isActive) {
 				isActive = true;
 				if (timeoutTable.containsKey(MainActivity.PHONE_SECURITY_STATE)) {
@@ -151,7 +190,7 @@ public class BlockActivityHandler {
 					timeoutTable.remove(MainActivity.PHONE_SECURITY_STATE);
 				}
 			}
-		} else if (!isScreenOn && !isAccelMoving) {
+		} else if (!isScreenOn && (!isAccelerometerOn || !isAccelMoving)) {
 			if (isActive) {
 				isActive = false;
 				if (timeoutTable.containsKey(MainActivity.PHONE_SECURITY_STATE)) {
@@ -173,6 +212,11 @@ public class BlockActivityHandler {
 		Log.d(TAG, "Accelerometer state is: " + (isCurrStateMoving ? "moving" : "not moving"));
 		isAccelMoving = isCurrStateMoving;
 		handleScreenAndAccel(isScreenOn, isAccelMoving);
+	}
+	
+	public void onSafenessOfLocationChange(boolean isSafe) {
+		Log.d(TAG, "Location safeness state is: " + (isSafe ? "safe" : "not safe"));
+		isSafeLoc = isSafe;
 	}
 	
 	private class timeoutCallback implements Runnable{
@@ -216,7 +260,15 @@ public class BlockActivityHandler {
 				lower_level = SecurityLevel.LOW.toString();
 			}
 		}
-
+		
+		if (isSafeLoc && (prev_level.equals(SecurityLevel.PRIVATE.toString()) || prev_level.equals(SecurityLevel.HIGH.toString()) ||
+				prev_level.equals(SecurityLevel.MEDIUM.toString())) && (lower_level.equals(SecurityLevel.LOW.toString()) ||
+						lower_level.equals(SecurityLevel.PUBLIC.toString()))) {
+			Log.d(TAG, "DIDN'T DROP! We're in a safe location! Current phone state:" + sp.getString(MainActivity.PHONE_SECURITY_STATE,
+					SecurityLevel.PUBLIC.toString()));
+			return true;
+		}
+		
 		//Log.d(TAG, "Next level " + lower_level);
 		Editor e = sp.edit();
 		e.putString(MainActivity.PHONE_SECURITY_STATE, lower_level);
@@ -295,8 +347,10 @@ public class BlockActivityHandler {
 	public void onDestroy(){
 		current_context.unregisterReceiver(passed);
 		current_context.unregisterReceiver(not_passed);
+		current_context.unregisterReceiver(turn_on_off_location);
+		current_context.unregisterReceiver(turn_on_off_accel);
 		
-		if (sp.getBoolean("trigger_1", false)){
+		if (screen_on != null){
 			current_context.unregisterReceiver(screen_on);
 			current_context.unregisterReceiver(screen_off);
 		}

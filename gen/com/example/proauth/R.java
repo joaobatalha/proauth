@@ -38,31 +38,35 @@ public final class R {
         public static final int selector_actionbar_button_transition=0x7f020008;
     }
     public static final class id {
-        public static final int AppIcon=0x7f0b0006;
-        public static final int BackgroundGlowImageView=0x7f0b0002;
-        public static final int MenuItemPreferences=0x7f0b000e;
-        public static final int MenuItemSecuritySettings=0x7f0b000f;
-        public static final int PasswordEnter=0x7f0b0004;
-        public static final int WarningTextView=0x7f0b0003;
-        public static final int WhichAppTextView=0x7f0b0005;
-        public static final int appList=0x7f0b000c;
-        public static final int app_icon=0x7f0b0009;
-        public static final int app_name=0x7f0b000a;
-        public static final int app_security_level=0x7f0b000b;
+        public static final int AppIcon=0x7f0b0009;
+        public static final int BackgroundGlowImageView=0x7f0b0005;
+        public static final int MenuItemPreferences=0x7f0b0011;
+        public static final int MenuItemSecuritySettings=0x7f0b0012;
+        public static final int PasswordEnter=0x7f0b0007;
+        public static final int WarningTextView=0x7f0b0006;
+        public static final int WhichAppTextView=0x7f0b0008;
+        public static final int appList=0x7f0b000f;
+        public static final int app_icon=0x7f0b000c;
+        public static final int app_name=0x7f0b000d;
+        public static final int app_security_level=0x7f0b000e;
+        public static final int button1=0x7f0b0003;
         public static final int convenience_content=0x7f0b0000;
+        public static final int editText1=0x7f0b0002;
         public static final int faq_content=0x7f0b0001;
-        public static final int main_page_welcome=0x7f0b0007;
-        public static final int menu_settings=0x7f0b0010;
-        public static final int monitor_togglebutton=0x7f0b000d;
-        public static final int prefList=0x7f0b0008;
+        public static final int gpsList=0x7f0b0004;
+        public static final int main_page_welcome=0x7f0b000a;
+        public static final int menu_settings=0x7f0b0013;
+        public static final int monitor_togglebutton=0x7f0b0010;
+        public static final int prefList=0x7f0b000b;
     }
     public static final class layout {
         public static final int activity_convenience=0x7f030000;
         public static final int activity_faq=0x7f030001;
-        public static final int activity_lock=0x7f030002;
-        public static final int activity_main=0x7f030003;
-        public static final int app_security_listitem=0x7f030004;
-        public static final int manage_apps=0x7f030005;
+        public static final int activity_gps=0x7f030002;
+        public static final int activity_lock=0x7f030003;
+        public static final int activity_main=0x7f030004;
+        public static final int app_security_listitem=0x7f030005;
+        public static final int manage_apps=0x7f030006;
     }
     public static final class menu {
         public static final int actionbar_main=0x7f0a0000;

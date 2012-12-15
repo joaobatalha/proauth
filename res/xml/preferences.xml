@@ -92,8 +92,15 @@
         <CheckBoxPreference
                 android:key="trigger_3"
                 android:title="GPS"
-                android:summary="Keeps phone at HIGH security level while at safe locations."
+                android:summary="Keeps phone at MEDIUM security level while at safe locations."
                 android:defaultValue="false"/>
+        
+        <Preference android:title="Set current location as safe"
+            		android:summary="Clear your trusted location and set it to be your current location."
+            		android:enabled = "false"
+            		android:key="gps_set_location">
+    			<intent android:action="com.example.proauth.GPSPreferencesActivity" />
+		</Preference>	
 
     </PreferenceCategory>
 
