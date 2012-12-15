@@ -91,7 +91,7 @@
         
         <CheckBoxPreference
                 android:key="trigger_3"
-                android:title="GPS"
+                android:title="GPS and Network Location"
                 android:summary="Keeps phone at MEDIUM security level while at safe locations."
                 android:defaultValue="false"/>
         
