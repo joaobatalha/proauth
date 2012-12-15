@@ -3,12 +3,11 @@
     package="com.example.proauth"
     android:versionCode="1"
     android:versionName="1.0" >
+	
     <uses-permission android:name="android.permission.READ_LOGS" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.DISABLE_KEYGUARD" />
-    <uses-permission android:name="android.permission.GET_TASKS"/>
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
-    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    
+
     
 
     <uses-sdk
@@ -72,7 +71,9 @@
             </intent-filter>
         </activity>
         
-        <service android:name="com.example.proauth.MonitorService" />
+        <service 
+            android:name="com.example.proauth.MonitorService" 
+            android:exported="false"/>
         
         <receiver android:name="StartupReceiver">
         	<intent-filter>

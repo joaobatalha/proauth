@@ -39,8 +39,7 @@ public class BlockActivityHandler {
 		current_context = context;
 		lockActivityName = ".LockScreenActivity";
 		handler = new Handler();
-		activity_manager = (ActivityManager)current_context.getSystemService(Context.ACTIVITY_SERVICE);
-		lastRunningPackage = getRunningPackage();		
+		activity_manager = (ActivityManager)current_context.getSystemService(Context.ACTIVITY_SERVICE);		
 		sp = PreferenceManager.getDefaultSharedPreferences(current_context);
 		INTERVAL = Integer.parseInt(sp.getString("timeout_duration", "5000"));
 			
@@ -84,7 +83,8 @@ public class BlockActivityHandler {
 			}
 		}, new IntentFilter(LockScreenActivity.PASSED));
 		
-		context.registerReceiver(not_passed = new BroadcastReceiver(){
+		
+		current_context.registerReceiver(not_passed = new BroadcastReceiver(){
 			@Override
 			public void onReceive(Context context, Intent intent) {
 				String packagename = intent.getStringExtra(LockScreenActivity.PACKAGE_NAME);
@@ -219,13 +219,6 @@ public class BlockActivityHandler {
 		}	
 	}
 	
-	private String getRunningPackage(){
-		List<RunningTaskInfo> infos = activity_manager.getRunningTasks(1);
-		if (infos.size()<1) return null; 
-		RunningTaskInfo info = infos.get(0);
-		return info.topActivity.getPackageName();
-	}
-
 	public void onActivityStarting(String packageName, String activityName) {
 		synchronized (this) {
 			// Here we do not want to block the password activity
